@@ -22,7 +22,7 @@ export class AppMenu {
 
     ngOnInit() {
     
-        const claims = this.tokenService.getSensitiveClaim();
+        const claims = this.tokenService.getClaim();
         if (claims) {
             if (claims.Roles.includes("ROLE_SYSTEM_ADMIN")) {
                 this.model.push({
@@ -35,6 +35,12 @@ export class AppMenu {
                     {
                         label: 'Home',
                         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
+                    },
+                    {
+                        label: 'Administração',
+                        items: [
+                            { label: 'Cadastro', items: [
+                                { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] }] }]
                     },
                     {
                         label: 'UI Components',

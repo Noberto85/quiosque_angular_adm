@@ -20,7 +20,7 @@ export const authInterceptor : HttpInterceptorFn = (req,next) =>{
 
     return next(authRequest).pipe(
         catchError((error) => {
-            debugger
+
             if (error.status === 401) {
                 router.navigate(['/auth/login']); // Redireciona para a página de login
             }  

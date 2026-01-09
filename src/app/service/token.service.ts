@@ -30,7 +30,7 @@ export class TokenService {
         return localStorage.getItem(AppConstants.BEARER_TOKEN);
     }
 
-    getSensitiveClaim(): DecodeToken {
+    getClaim(): DecodeToken {
         return JSON.parse(localStorage.getItem(AppConstants.CLAIMS) || '{}') as DecodeToken;
     }
 

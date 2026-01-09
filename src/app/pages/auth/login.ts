@@ -26,6 +26,15 @@ import { ToastModule } from 'primeng/toast';
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                        <div class="flex justify-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils-crossed h-8 w-8">
+                    <path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"></path>
+                    <path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"></path>
+                    <path d="m2.1 21.8 6.4-6.3"></path>
+                    <path d="m19 5-7 7"></path>
+               </svg>
+                        </div>
+
                         <div class="text-center mb-8">
                             <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Controle Financeiro</div>
                             <span class="text-muted-color font-medium">Bem-vindo! Faça login para continuar.</span>
@@ -81,7 +90,7 @@ export class Login {
             this.authService.logar(this.loginForm.value.email, this.loginForm.value.password).subscribe({
                 next: (response) => {
                     this.loadingService.hide();
-                    
+
                     if (response) {
                         this.tokenService.setToken(response.token)
                         this.router.navigate(['/']);
@@ -89,7 +98,7 @@ export class Login {
                 },
                 error: (error) => {
                     this.loadingService.hide();
-                    this.service.add({ severity: 'error', summary: 'Error Message', detail:  error.error.message });  
+                    this.service.add({ severity: 'error', summary: 'Error Message', detail: error.error.message });
                 }
             })
 
