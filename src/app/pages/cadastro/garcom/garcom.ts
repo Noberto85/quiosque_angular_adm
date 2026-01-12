@@ -3,7 +3,8 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CpfValidator } from '@/shared/validators/cpf.validator';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
@@ -28,58 +29,57 @@ import { GarcomModel } from '@/model/garcom.model';
 import { TokenService } from '@/service/token.service';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { ParamsRequest } from '@/shared/utils/pageable.utils';
+import { LoadingService } from '@/shared/services/loading.service';
+import { GarcomDeleteDialog } from "./dialog/garcom-delete-dialog";
 
-interface Column {
-    field: string;
-    header: string;
-    customExportHeader?: string;
-}
-
-interface ExportColumn {
-    title: string;
-    dataKey: string;
-}
 
 @Component({
     selector: 'app-garcom',
     standalone: true,
     imports: [
-    CommonModule,
-    FormsModule,
-    ButtonModule,
-    RippleModule,
-    ToastModule,
-    ToolbarModule,
-    RatingModule,
-    InputTextModule,
-    TextareaModule,
-    SelectModule,
-    RadioButtonModule,
-    InputNumberModule,
-    DialogModule,
-    TagModule,
-    InputIconModule,
-    IconFieldModule,
-    ConfirmDialogModule,
-    TableModule,
-    NgxMaskDirective,
-    Panel,
-    Avatar,
-    Paginator
-],
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        RippleModule,
+        ToastModule,
+        ToolbarModule,
+        RatingModule,
+        InputTextModule,
+        TextareaModule,
+        SelectModule,
+        RadioButtonModule,
+        InputNumberModule,
+        DialogModule,
+        TagModule,
+        InputIconModule,
+        IconFieldModule,
+        ConfirmDialogModule,
+        TableModule,
+        NgxMaskDirective,
+        Panel,
+        Avatar,
+        Paginator,
+        GarcomDeleteDialog
+    ],
     providers: [MessageService, ProductService, ConfirmationService],
     templateUrl: './garcom.html',
     styleUrl: './garcom.scss'
 })
 export class Garcom implements OnInit {
-
+    loadingService = inject(LoadingService);
     tokenService = inject(TokenService);
     garcomDialog: boolean = false;
+    garcomDelete: boolean = false;
+    garcomEdit: boolean = false;
+    garcomDeleteId: number = 0;
 
     products = signal<Product[]>([]);
     garcons = signal<GarcomModel[]>([]);
 
     garcom!: GarcomModel;
+
+    form!: FormGroup;
 
     submitted: boolean = false;
 
@@ -87,7 +87,7 @@ export class Garcom implements OnInit {
 
     @ViewChild('dt') dt!: Table;
 
-    cols!: Column[];
+
     first: number = 0;
     rows: number = 10;
     totalRecords: number = 0;
@@ -97,18 +97,36 @@ export class Garcom implements OnInit {
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private garcomService: GarcomService
+        private garcomService: GarcomService,
+        private formBuilder: FormBuilder
     ) { }
 
     ngOnInit() {
+        this.createForm();
         this.loadData();
     }
 
+    createForm() {
+        this.form = this.formBuilder.group({
+            id: [null],
+            nome: [null, [Validators.required]],
+            cpf: [null, [Validators.required, CpfValidator.validate]],
+            status: [true]
+        });
+    }
+
     loadData(param?: ParamsRequest) {
+        this.loadingService.show();
         const claim = this.tokenService.getClaim();
-        this.garcomService.findAllPageable(param, claim.quiosque_id).subscribe((data) => {
-            this.garcons.set(data.content);
-            this.totalRecords = data.totalElements;
+        this.garcomService.findAllPageable(param, claim.quiosque_id).subscribe({
+            next: (data) => {
+                this.garcons.set(data.content);
+                this.totalRecords = data.totalElements;
+                this.loadingService.hide();
+            },
+            error: () => {
+                this.loadingService.hide();
+            }
         });
     }
 
@@ -136,20 +154,10 @@ export class Garcom implements OnInit {
         this.garcomDialog = true;
     }
 
-    deleteSelectedGarcons() {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected products?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Garcons Deleted',
-                    life: 3000
-                });
-            }
-        });
+
+    deleteSelectedGarcons(garcomId: number) {
+        this.garcomDeleteId = garcomId;
+        this.garcomDelete = true;
     }
 
     hideDialog() {
@@ -157,51 +165,118 @@ export class Garcom implements OnInit {
         this.submitted = false;
     }
 
-    deleteGarcom(garcom: GarcomModel) {
+    deleteGarcom(garcom: any) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + garcom.nome + '?',
-            header: 'Confirm',
+            message: 'Tem certeza que deseja excluir o garçom? Todas as mesas serão desassociadas e adicionadas ao garçom selecionado!',
+            header: 'Confirmar Exclusão',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Deleted',
-                    life: 3000
+                this.loadingService.show();
+                this.garcomDeleteId;
+                this.garcomDelete = false
+                this.garcomService.delete(garcom, this.garcomDeleteId).subscribe({
+                    next: () => {
+                        this.loadingService.hide();
+                        this.loadData();
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Successful',
+                            detail: 'Garcom excluído com sucesso',
+                            life: 3000
+                        });
+                    },
+                    error: (error) => {
+                        this.loadingService.hide();
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: error.error.message,
+                            life: 3000
+                        });
+                    }
                 });
             }
         });
     }
 
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.products().length; i++) {
-            if (this.products()[i].id === id) {
-                index = i;
-                break;
+    activateGarcom(garcom: GarcomModel) {
+        this.confirmationService.confirm({
+            message: 'Tem certeza que deseja ativar o garçom?',
+            header: 'Confirmar Ativação',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.loadingService.show();
+                this.garcomService.activate(garcom.id).subscribe({
+                    next: () => {
+                        this.loadingService.hide();
+                        this.loadData();
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Successful',
+                            detail: 'Garcom ativado com sucesso',
+                            life: 3000
+                        });
+                    },
+                    error: (error) => {
+                        this.loadingService.hide();
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: error.error.message,
+                            life: 3000
+                        });
+                    }
+                });
             }
+        });
+    }
+
+
+   
+
+    saveGarcom() {
+
+        this.submitted = true;
+
+        if (this.form.invalid) {
+            return;
         }
 
-        return index;
+        this.garcom = {
+            ...this.form.value
+        };
+        const claim = this.tokenService.getClaim();
+         this.loadingService.show();
+        this.garcomService.create(this.garcom, claim.quiosque_id).subscribe({
+            next: () => {
+                this.loadingService.hide();
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Garcom salvo com sucesso',
+                    life: 3000
+                });
+                this.loadData();
+                this.hideDialog();
+            },
+            error: (error) => {
+                this.loadingService.hide();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.error.message,
+                    life: 3000
+                });
+            }
+        });
     }
+    
 
-    createId(): string {
-        let id = '';
-
-        return id;
-    }
-
-    getSeverity(status: boolean) {
+     getSeverity(status: boolean) {
         return status ? 'success' : 'danger';
     }
 
     getStatusName(status: boolean) {
         return status ? 'Ativo' : 'Inativo';
-    }
-
-    saveProduct() {
-        this.submitted = true;
-
-
     }
 }

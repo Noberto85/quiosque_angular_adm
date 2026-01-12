@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 
 
 
+
 export const authInterceptor : HttpInterceptorFn = (req,next) =>{
     
     const tokenService = inject(TokenService);
@@ -22,6 +23,7 @@ export const authInterceptor : HttpInterceptorFn = (req,next) =>{
         catchError((error) => {
 
             if (error.status === 401) {
+                tokenService.clearToken();
                 router.navigate(['/auth/login']); // Redireciona para a página de login
             }  
             if (error.status === 403) {
