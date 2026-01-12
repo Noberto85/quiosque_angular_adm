@@ -31,6 +31,7 @@ import { PaginatorState, Paginator } from 'primeng/paginator';
 import { ParamsRequest } from '@/shared/utils/pageable.utils';
 import { LoadingService } from '@/shared/services/loading.service';
 import { GarcomDeleteDialog } from "./dialog/garcom-delete-dialog";
+import { debounceTime } from 'rxjs';
 
 
 @Component({
@@ -103,6 +104,13 @@ export class Garcom implements OnInit {
 
     ngOnInit() {
         this.createForm();
+         this.form
+            .get('search')
+            ?.valueChanges.pipe(debounceTime(1000))
+            .subscribe((valor) => {
+
+                this.loadData({ search: valor });
+            });
         this.loadData();
     }
 
@@ -111,7 +119,8 @@ export class Garcom implements OnInit {
             id: [null],
             nome: [null, [Validators.required]],
             cpf: [null, [Validators.required, CpfValidator.validate]],
-            status: [true]
+            status: [true],
+             search: [null]
         });
     }
 
@@ -150,8 +159,8 @@ export class Garcom implements OnInit {
     }
 
     editGarcom(garcom: GarcomModel) {
-        this.garcom = { ...garcom };
-        this.garcomDialog = true;
+        this.form.patchValue(garcom);
+        this.garcomEdit = true;
     }
 
 
@@ -162,6 +171,11 @@ export class Garcom implements OnInit {
 
     hideDialog() {
         this.garcomDialog = false;
+        this.submitted = false;
+    }
+
+    hideEditDialog() {
+        this.garcomEdit = false;
         this.submitted = false;
     }
 
@@ -232,7 +246,7 @@ export class Garcom implements OnInit {
     }
 
 
-   
+
 
     saveGarcom() {
 
@@ -246,7 +260,7 @@ export class Garcom implements OnInit {
             ...this.form.value
         };
         const claim = this.tokenService.getClaim();
-         this.loadingService.show();
+        this.loadingService.show();
         this.garcomService.create(this.garcom, claim.quiosque_id).subscribe({
             next: () => {
                 this.loadingService.hide();
@@ -270,9 +284,47 @@ export class Garcom implements OnInit {
             }
         });
     }
-    
 
-     getSeverity(status: boolean) {
+    editarGarcom(garcom: GarcomModel) {
+        this.garcomEdit = false;
+        this.submitted = true;
+
+        if (this.form.invalid) {
+            return;
+        }
+
+        this.garcom = {
+            ...this.form.value,
+            ...garcom
+        };
+
+        this.loadingService.show();
+        this.garcomService.update(this.garcom).subscribe({
+            next: () => {
+                this.loadingService.hide();
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Garcom editado com sucesso',
+                    life: 3000
+                });
+                this.loadData();
+                this.hideDialog();
+            },
+            error: (error) => {
+                this.loadingService.hide();
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.error.message,
+                    life: 3000
+                });
+            }
+        });
+    }
+
+
+    getSeverity(status: boolean) {
         return status ? 'success' : 'danger';
     }
 

@@ -1,11 +1,10 @@
 import { GarcomModel } from "@/model/garcom.model";
-import { Garcom } from "@/pages/cadastro/garcom/garcom";
 import { ApiPageableResponse, ParamsRequest } from "@/shared/utils/pageable.utils";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import {  Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "src/environments/environment";
-import { TokenService } from "./token.service";
+
 
 
 @Injectable({
@@ -21,7 +20,7 @@ export class GarcomService {
     }
 
     findAllPageable(params?: ParamsRequest, quiosqueId?: string): Observable<ApiPageableResponse<GarcomModel>> {
-        const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', search = '' } = params || {};
+        const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', search = undefined } = params || {};
 
         let queryParams = new HttpParams()
             .set('page', page)
