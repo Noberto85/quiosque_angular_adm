@@ -27,6 +27,7 @@
                                     <i class="pi pi-search"></i>
                                 </p-inputicon>
                                 <input pInputText type="text" formControlName="search" placeholder="Procure por nome/CRO" />
+                                  <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
                             </p-iconfield>
                      </div>
                 </form>
@@ -112,7 +113,7 @@
 
     <ng-template #footer>
         <p-button label="Cancel" icon="pi pi-times" text (click)="hideEditDialog()" />
-        <p-button label="Save" icon="pi pi-check" (click)="editarGarcom(garcom)" [disabled]="form.invalid" />
+        <p-button label="Editar" icon="pi pi-check" (click)="editarGarcom(garcom)" [disabled]="form.invalid" />
     </ng-template>
 </p-dialog>
 

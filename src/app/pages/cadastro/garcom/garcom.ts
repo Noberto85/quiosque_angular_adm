@@ -123,6 +123,10 @@ export class Garcom implements OnInit {
              search: [null]
         });
     }
+    clearSearch() {
+        this.form.get('search')?.setValue(null);
+        this.loadData();
+    }
 
     loadData(param?: ParamsRequest) {
         this.loadingService.show();
@@ -148,7 +152,7 @@ export class Garcom implements OnInit {
         this.first = event.first ?? 0;
         this.rows = event.rows ?? 10;
         this.page = event.page ?? 0;
-        this.loadData({ page: this.page });
+        this.loadData({ page: this.page, search: this.form.get('search')?.value });
 
     }
 
