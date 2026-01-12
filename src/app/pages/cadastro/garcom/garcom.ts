@@ -108,7 +108,6 @@ export class Garcom implements OnInit {
             .get('search')
             ?.valueChanges.pipe(debounceTime(1000))
             .subscribe((valor) => {
-
                 this.loadData({ search: valor });
             });
         this.loadData();
@@ -120,15 +119,16 @@ export class Garcom implements OnInit {
             nome: [null, [Validators.required]],
             cpf: [null, [Validators.required, CpfValidator.validate]],
             status: [true],
-             search: [null]
+            search: [null]
         });
     }
     clearSearch() {
         this.form.get('search')?.setValue(null);
-        this.loadData();
+       
     }
 
     loadData(param?: ParamsRequest) {
+        
         this.loadingService.show();
         const claim = this.tokenService.getClaim();
         this.garcomService.findAllPageable(param, claim.quiosque_id).subscribe({
@@ -143,12 +143,8 @@ export class Garcom implements OnInit {
         });
     }
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
 
     onPageChange(event: PaginatorState) {
-
         this.first = event.first ?? 0;
         this.rows = event.rows ?? 10;
         this.page = event.page ?? 0;
@@ -185,12 +181,14 @@ export class Garcom implements OnInit {
 
     deleteGarcom(garcom: any) {
         this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir o garçom? Todas as mesas serão desassociadas e adicionadas ao garçom selecionado!',
+            message: 'Tem certeza que deseja excluir o garçom? <br>Todas as mesas serão desassociadas e adicionadas ao garçom selecionado!',
             header: 'Confirmar Exclusão',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.loadingService.show();
-                this.garcomDeleteId;
+                this.garcomDeleteId = garcom.id;
                 this.garcomDelete = false
                 this.garcomService.delete(garcom, this.garcomDeleteId).subscribe({
                     next: () => {

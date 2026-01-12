@@ -14,7 +14,7 @@
     </ng-template>
 </p-toolbar>
 
-<p-table #dt [value]="garcons()" [rows]="10" 
+<p-table #dt [value]="garcons()" [rows]="10"  stripedRows 
     [globalFilterFields]="['nome', 'cpf']"
     [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id"
   
@@ -26,7 +26,7 @@
                                 <p-inputicon>
                                     <i class="pi pi-search"></i>
                                 </p-inputicon>
-                                <input pInputText type="text" formControlName="search" placeholder="Procure por nome/CRO" />
+                                <input pInputText type="text" formControlName="search" placeholder="Procure por nome ou cpf" />
                                   <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
                             </p-iconfield>
                      </div>
