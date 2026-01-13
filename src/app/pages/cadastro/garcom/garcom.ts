@@ -1,5 +1,5 @@
 
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, DebugNode, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -188,7 +188,6 @@ export class Garcom implements OnInit {
             rejectLabel: 'Não',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                debugger
                 this.loadingService.show();
                 this.garcomDelete = false
                 this.garcomService.delete(garcom, this.garcomDeleteId).subscribe({
@@ -252,7 +251,7 @@ export class Garcom implements OnInit {
 
 
     saveGarcom() {
-
+        
         this.submitted = true;
 
         if (this.form.invalid) {
@@ -286,6 +285,8 @@ export class Garcom implements OnInit {
                 });
             }
         });
+
+        this.form.reset();
     }
 
     editarGarcom(garcom: GarcomModel) {
