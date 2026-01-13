@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -18,6 +18,9 @@ import { LoadingService } from '@/shared/services/loading.service';
 import { ParamsRequest } from '@/shared/utils/pageable.utils';
 import { PhonePipe } from '@/shared/pipes/phone.pipe';
 import { Paginator } from "primeng/paginator";
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { debounceTime } from 'rxjs';
+import { Select } from "primeng/select";
 
 @Component({
     selector: 'app-pedidos',
@@ -35,7 +38,10 @@ import { Paginator } from "primeng/paginator";
     InputIconModule,
     RippleModule,
     PhonePipe,
-    Paginator
+    Paginator,
+    ReactiveFormsModule,
+    SelectButtonModule,
+    Select
 ],
     providers: [MessageService, PedidoService],
     templateUrl: './pedidos.html'
@@ -45,6 +51,7 @@ export class Pedidos implements OnInit {
     tokenService = inject(TokenService);
     pedidoService = inject(PedidoService);
     messageService = inject(MessageService);
+    formBuilder = inject(FormBuilder);
 
     pedidos = signal<PedidoModel[]>([]);
     totalRecords: number = 0;
@@ -56,9 +63,37 @@ export class Pedidos implements OnInit {
     rows: number = 10;
     page: number = 0;
     pageSize: number = 10;
+    form!: FormGroup;
+    dropdownValues = [
+        { name: 'New York', code: 'NY' },
+        { name: 'Rome', code: 'RM' },
+        { name: 'London', code: 'LDN' },
+        { name: 'Istanbul', code: 'IST' },
+        { name: 'Paris', code: 'PRS' }
+    ];
 
     ngOnInit() {
+        this.createForm();
+        this.form
+            .get('search')
+            ?.valueChanges.pipe(debounceTime(1000))
+            .subscribe((valor) => {
+                this.loadData({ search: valor });
+            });
+        
         this.loadData();
+    }
+
+    createForm() {
+        this.form = this.formBuilder.group({
+            search: [null],
+            status: [null]
+        });
+    }
+
+    clearSearch() {
+        this.form.get('search')?.setValue(null);
+       
     }
 
     loadData(params?: ParamsRequest) {
@@ -66,9 +101,9 @@ export class Pedidos implements OnInit {
         const claim = this.tokenService.getClaim();
         debugger
         this.pedidoService.findAllPageable(params, claim.quiosque_id).subscribe({
-            
+
             next: (data) => {
-                
+
                 this.pedidos.set(data.content);
                 this.totalRecords = data.totalElements;
                 this.loading.set(false);
@@ -96,9 +131,8 @@ export class Pedidos implements OnInit {
     }
 
     getSeverity(status: string) {
-        debugger
         switch (status) {
-            case 'completed':
+            case 'delivering':
                 return 'success';
             case 'preparing':
                 return 'info';
@@ -109,22 +143,35 @@ export class Pedidos implements OnInit {
         }
     }
 
-    updateStatus(pedido: PedidoModel, status: 'completed' | 'preparing' | 'cancelled') {
+     updateStatus(pedido: PedidoModel, status: 'EM_PREPARACAO' | 'PRONTO' | 'ENTREGUE') {
         if (!pedido.id) return;
 
+        this.pedidoService.updateStatus(pedido.id, status).subscribe({
+            next: (data) => {
+                this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Status atualizado com sucesso' });
+                this.loadData();
+            },
+            error: (err) => {
+                this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar status' });
+            }
+        });
     }
 
     returnStatus(status: string) {
         switch (status) {
-            case 'completed':
+            case 'delivering':
                 return 'Concluído';
+             case 'awaiting_preparation':
+                return 'Aguardando Preparação';
             case 'preparing':
-                return 'Preparando';
+                return 'Em Andamento';
             case 'cancelled':
                 return 'Cancelado';
+             case 'completed':
+                return 'Concluído';
             default:
                 return 'Aguardando Pagamento';
         }
     }
-    
+
 }

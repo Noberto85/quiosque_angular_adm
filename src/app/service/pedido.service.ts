@@ -30,7 +30,7 @@ export class PedidoService {
             return this._http.get<ApiPageableResponse<PedidoModel>>(`${environment.apiUrl}${this.urlPedidoBase}/${quiosqueId}/pageable`, { params: queryParams });
         }
 
-    updateStatus(id: string, status: 'EM_ANDAMENTO' | 'CONCLUIDO'): Observable<any> {
-        return of({});
+    updateStatus(id: string, status:any): Observable<any> {
+       return this._http.put(`${environment.apiUrl}${this.urlPedidoBase}/${id}/status`, {status: status});
     }
 }
