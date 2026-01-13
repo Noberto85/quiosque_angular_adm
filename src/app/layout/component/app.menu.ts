@@ -40,7 +40,10 @@ export class AppMenu {
                         label: 'Administração',
                         items: [
                             { label: 'Cadastro', items: [
-                                { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] }] },
+                                { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] },
+                                 { label: 'Mesa', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/mesa'] },
+                            ] },
+                           
                             { label: 'Pedidos', icon: 'pi pi-fw pi-list', routerLink: ['/pedidos'] }
                         ]
                     },

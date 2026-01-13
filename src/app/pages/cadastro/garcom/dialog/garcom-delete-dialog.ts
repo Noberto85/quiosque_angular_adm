@@ -84,7 +84,6 @@ export class GarcomDeleteDialog implements OnChanges {
     }
 
     deleteGarcom() {
-        debugger
         if (this.form.valid) {
            this.garcomDeleteEvent.emit(this.form.value.garcomDestino.code);  
         }

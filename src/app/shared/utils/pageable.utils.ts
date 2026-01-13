@@ -18,7 +18,7 @@ export interface ParamsRequest {
     size?: number;
     orderBy?: string;
     direction?: string;
-    codigo?: string;
+    numero?: string;
 }
 
 export interface ApiPageableResponse<T> {

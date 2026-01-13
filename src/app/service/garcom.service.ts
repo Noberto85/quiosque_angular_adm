@@ -39,6 +39,10 @@ export class GarcomService {
         return this._http.get<any>(`${environment.apiUrl}${this.urlGarcomBase}/findAllNotEquals/${quiosqueId}/${garcomId}`);
     }
 
+     findAllWithStatusTrue(quiosqueId: string): Observable<any> {
+        return this._http.get<any>(`${environment.apiUrl}${this.urlGarcomBase}/findAllWithStatusTrue/${quiosqueId}`);
+    }
+
      delete(novoGarcomId: any, garcomId: any): Observable<any> {
         return this._http.delete<any>(`${environment.apiUrl}${this.urlGarcomBase}/${novoGarcomId}/${garcomId}`);
     }
