@@ -17,10 +17,10 @@ import { TokenService } from '@/service/token.service';
 import { LoadingService } from '@/shared/services/loading.service';
 import { ParamsRequest } from '@/shared/utils/pageable.utils';
 import { PhonePipe } from '@/shared/pipes/phone.pipe';
+import { TimeElapsedPipe } from '@/shared/pipes/time-elapsed.pipe';
 import { Paginator } from "primeng/paginator";
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { debounceTime } from 'rxjs';
-import { Select } from "primeng/select";
 
 @Component({
     selector: 'app-pedidos',
@@ -41,7 +41,7 @@ import { Select } from "primeng/select";
     Paginator,
     ReactiveFormsModule,
     SelectButtonModule,
-    Select
+    TimeElapsedPipe
 ],
     providers: [MessageService, PedidoService],
     templateUrl: './pedidos.html'
@@ -56,6 +56,9 @@ export class Pedidos implements OnInit {
     pedidos = signal<PedidoModel[]>([]);
     totalRecords: number = 0;
     loading = signal<boolean>(false);
+    
+    now = signal<Date>(new Date());
+    private intervalId: any;
 
     @ViewChild('dt') dt!: Table;
 
@@ -64,12 +67,11 @@ export class Pedidos implements OnInit {
     page: number = 0;
     pageSize: number = 10;
     form!: FormGroup;
-    dropdownValues = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
+    statusOptions = [
+        { label: 'Em Andamento', value: 'EM_ANDAMENTO' },
+        { label: 'Concluído', value: 'CONCLUIDO' },
+        { label: 'Aguardando Pagamento', value: 'AGUARDANDO_PAGAMENTO' },
+        { label: 'Cancelado', value: 'CANCELADO' }
     ];
 
     ngOnInit() {
@@ -82,6 +84,16 @@ export class Pedidos implements OnInit {
             });
         
         this.loadData();
+        
+        this.intervalId = setInterval(() => {
+            this.now.set(new Date());
+        }, 1000);
+    }
+    
+    ngOnDestroy() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+        }
     }
 
     createForm() {
