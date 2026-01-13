@@ -180,6 +180,7 @@ export class Garcom implements OnInit {
     }
 
     deleteGarcom(garcom: any) {
+        
         this.confirmationService.confirm({
             message: 'Tem certeza que deseja excluir o garçom? <br>Todas as mesas serão desassociadas e adicionadas ao garçom selecionado!',
             header: 'Confirmar Exclusão',
@@ -187,8 +188,8 @@ export class Garcom implements OnInit {
             rejectLabel: 'Não',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
+                debugger
                 this.loadingService.show();
-                this.garcomDeleteId = garcom.id;
                 this.garcomDelete = false
                 this.garcomService.delete(garcom, this.garcomDeleteId).subscribe({
                     next: () => {
