@@ -5,9 +5,6 @@ import { TokenService } from '../service/token.service';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
-
-
-
 export const authInterceptor : HttpInterceptorFn = (req,next) =>{
     
     const tokenService = inject(TokenService);
@@ -24,13 +21,13 @@ export const authInterceptor : HttpInterceptorFn = (req,next) =>{
 
             if (error.status === 401) {
                 tokenService.clearToken();
-                router.navigate(['/auth/login']); // Redireciona para a página de login
+                router.navigate(['/auth/login']); 
             }  
             if (error.status === 403) {
                
-                router.navigate(['/']); // Redireciona para outra página
+                router.navigate(['/']); 
             }
-            return throwError(() => error); // Propaga o erro
+            return throwError(() => error); 
         })
     );
 };

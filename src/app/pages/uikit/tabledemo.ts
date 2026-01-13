@@ -103,7 +103,7 @@ interface expandedRows {
                                             </ng-template>
                                         </p-multiselect>
                                     </ng-template>
-                                </p-columnFilter>
+                                </p-columnFilter> 
                             </div>
                         </th>
                         <th style="min-width: 10rem">
@@ -249,7 +249,7 @@ interface expandedRows {
                         <th style="width: 5rem"></th>
                         <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
                         <th>Image</th>
-                        <th pSortableColumn="price">Price <p-sortIcon field="price" /></th>
+                        <th pSortableColumn="price">preço <p-sortIcon field="price" /></th>
                         <th pSortableColumn="category">Category <p-sortIcon field="category" /></th>
                         <th pSortableColumn="rating">Reviews <p-sortIcon field="rating" /></th>
                         <th pSortableColumn="inventoryStatus">Status <p-sortIcon field="inventoryStatus" /></th>
