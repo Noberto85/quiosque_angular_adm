@@ -14,12 +14,17 @@
     [loading]="loading()">
     
     <ng-template pTemplate="caption">
-        <div class="flex items-center justify-between">
-            <p-iconfield>
-                <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
-            </p-iconfield>
-        </div>
+        <form [formGroup]="form">
+                    <div class="flex justify-between items-center flex-column sm:flex-row">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon>
+                                    <i class="pi pi-search"></i>
+                                </p-inputicon>
+                                <input class="w-[20rem]" pInputText type="text" formControlName="search" placeholder="Procure por codigo ou cliente" />
+                                  <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
+                            </p-iconfield>
+                     </div>
+                </form>
     </ng-template>
 
     <ng-template pTemplate="header">

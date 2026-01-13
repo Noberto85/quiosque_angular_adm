@@ -111,7 +111,7 @@ export class Pedidos implements OnInit {
     loadData(params?: ParamsRequest) {
         this.loading.set(true);
         const claim = this.tokenService.getClaim();
-        debugger
+    
         this.pedidoService.findAllPageable(params, claim.quiosque_id).subscribe({
 
             next: (data) => {
@@ -159,11 +159,11 @@ export class Pedidos implements OnInit {
         if (!pedido.id) return;
 
         this.pedidoService.updateStatus(pedido.id, status).subscribe({
-            next: (data) => {
+            next: () => {
                 this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Status atualizado com sucesso' });
                 this.loadData();
             },
-            error: (err) => {
+            error: () => {
                 this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar status' });
             }
         });

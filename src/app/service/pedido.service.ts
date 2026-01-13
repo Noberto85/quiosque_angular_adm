@@ -15,7 +15,7 @@ export class PedidoService {
     constructor(private _http: HttpClient) { }
 
     findAllPageable(params?: ParamsRequest, quiosqueId?: string): Observable<ApiPageableResponse<PedidoModel>> {
-            const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', codigo = undefined } = params || {};
+            const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', search = undefined } = params || {};
     
             let queryParams = new HttpParams()
                 .set('page', page)
@@ -23,8 +23,8 @@ export class PedidoService {
                 .set('orderBy', orderBy)
                 .set('direction', direction);
     
-            if (codigo) {
-                queryParams = queryParams.set('codigo', codigo);
+            if (search) {
+                queryParams = queryParams.set('search', search);
             }
     
             return this._http.get<ApiPageableResponse<PedidoModel>>(`${environment.apiUrl}${this.urlPedidoBase}/${quiosqueId}/pageable`, { params: queryParams });
