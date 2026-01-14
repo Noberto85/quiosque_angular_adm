@@ -34,7 +34,7 @@ export class MesaService {
     }
 
     delete(mesaId: any): Observable<any> {
-        return this._http.delete<any>(`${environment.apiUrl}${this.urlMesaBase}/${mesaId}`);
+        return this._http.delete<any>(`${environment.apiUrl}${this.urlMesaBase}/${mesaId}/disable`);
     }
         
     activate(mesaId: any): Observable<any> {

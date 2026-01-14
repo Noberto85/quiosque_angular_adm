@@ -189,8 +189,8 @@ export class Mesa implements OnInit {
                         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Mesa deletada', life: 3000 });
                         this.loadData();
                     },
-                    error: () => {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao deletar mesa', life: 3000 });
+                    error: (error) => {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail:  error.error.message, life: 3000 });
                     }
                 });
             }
