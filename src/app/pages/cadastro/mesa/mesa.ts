@@ -28,24 +28,24 @@ import { GarcomService } from '@/service/garcom.service';
     selector: 'app-mesa',
     standalone: true,
     imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    RippleModule,
-    ToastModule,
-    ToolbarModule,
-    InputTextModule,
-    InputNumberModule,
-    DialogModule,
-    TagModule,
-    InputIconModule,
-    IconFieldModule,
-    ConfirmDialogModule,
-    TableModule,
-    Paginator,
-    Select
-],
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        RippleModule,
+        ToastModule,
+        ToolbarModule,
+        InputTextModule,
+        InputNumberModule,
+        DialogModule,
+        TagModule,
+        InputIconModule,
+        IconFieldModule,
+        ConfirmDialogModule,
+        TableModule,
+        Paginator,
+        Select
+    ],
     providers: [MessageService, ConfirmationService, MesaService],
     templateUrl: './mesa.html',
     styleUrl: './mesa.scss'
@@ -55,15 +55,18 @@ export class Mesa implements OnInit {
     tokenService = inject(TokenService);
     mesaService = inject(MesaService);
     garcomService = inject(GarcomService);
-    
+
     mesaDialog: boolean = false;
     dropdownItems = [];
-    
+
     mesas = signal<MesaModel[]>([]);
     mesa!: MesaModel;
     form!: FormGroup;
     submitted: boolean = false;
-    
+    salvar: boolean = false;
+
+    tituloDialog: string = '';
+
     @ViewChild('dt') dt!: Table;
 
     first: number = 0;
@@ -76,7 +79,7 @@ export class Mesa implements OnInit {
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private formBuilder: FormBuilder
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.createForm();
@@ -89,7 +92,7 @@ export class Mesa implements OnInit {
             next: (data) => {
                 this.dropdownItems = data;
             },
-            error: (err) => {
+            error: () => {
                 this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar garçons' });
             }
         });
@@ -129,19 +132,50 @@ export class Mesa implements OnInit {
     }
 
     openNew() {
+        this.salvar = true;
+        this.tituloDialog = 'Cadastrar Mesa';
         this.mesa = {};
         this.submitted = false;
         this.mesaDialog = true;
         this.form.reset();
+       
     }
 
     editMesa(mesa: MesaModel) {
+        this.salvar = false;
+        this.tituloDialog = 'Editar Mesa';
         this.mesa = { ...mesa };
         this.mesaDialog = true;
         this.form.patchValue({
-            numero: mesa.numero,
-            capacidade: mesa.garcom
+            numero: mesa.numero
         });
+        this.form.updateValueAndValidity();
+
+      
+
+    }
+
+        updateMesa() {
+        
+        this.submitted = true;
+        if (this.form.valid) {
+            const mesaToUpdate: MesaModel = {
+                id: this.mesa.id,
+                numero: Number(this.form.value.numero),
+                garcomId: Number(this.form.value.garcom.code)
+            };
+
+            this.mesaService.update(mesaToUpdate).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Mesa Atualizada', life: 3000 });
+                    this.hideDialog();
+                    this.loadData();
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.error.message, life: 3000 });
+                }
+            });
+        }
     }
 
     deleteMesa(mesa: MesaModel) {
@@ -169,38 +203,26 @@ export class Mesa implements OnInit {
     }
 
     saveMesa() {
+debugger
         this.submitted = true;
 
         if (this.form.valid) {
             const claim = this.tokenService.getClaim();
             const mesaToSave: MesaModel = {
-                ...this.mesa,
-                ...this.form.value
+                numero: Number(this.form.value.numero),
+                garcomId: Number(this.form.value.garcom.code)
             };
 
-            if (this.mesa.id) {
-                this.mesaService.update(mesaToSave).subscribe({
-                    next: () => {
-                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Mesa Atualizada', life: 3000 });
-                        this.hideDialog();
-                        this.loadData();
-                    },
-                    error: () => {
-                         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar mesa', life: 3000 });
-                    }
-                });
-            } else {
-                this.mesaService.create(mesaToSave, claim.quiosque_id).subscribe({
-                    next: () => {
-                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Mesa Criada', life: 3000 });
-                        this.hideDialog();
-                        this.loadData();
-                    },
-                    error: () => {
-                         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao criar mesa', life: 3000 });
-                    }
-                });
-            }
+            this.mesaService.create(mesaToSave, claim.quiosque_id).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Mesa Atualizada', life: 3000 });
+                    this.hideDialog();
+                    this.loadData();
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.error.message, life: 3000 });
+                }
+            });
         }
     }
 }

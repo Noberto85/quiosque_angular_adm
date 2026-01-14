@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TimeElapsedPipe implements PipeTransform {
 
   transform(startTime: string, now: Date, status?: string, initTime?: string, endTime?: string): string {
-debugger
+
     if (status === 'awaiting_preparation' || status === 'preparing' || status === 'delivering') {
       if (!startTime) return '00:00:00';
 

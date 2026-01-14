@@ -23,7 +23,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-mesa>
             <tr>
-                <td>{{ mesa.numero }}</td>
+                <td>Mesa: &nbsp;{{ mesa.numero }}</td>
                 <td>{{ mesa.garcom }}</td>
                 <td>
                     <p-button pRipple icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
@@ -33,33 +33,28 @@
                 </td>
             </tr>
         </ng-template>
-        <ng-template pTemplate="summary">
-            <div class="flex align-items-center justify-content-between">
-                No total existem {{ mesas() ? mesas().length : 0 }} mesas.
-            </div>
-        </ng-template>
     </p-table>
 
     <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" />
 
-    <p-dialog [(visible)]="mesaDialog" [style]="{ width: '450px' }" header="Novo Garçom" [modal]="true">
+    <p-dialog [(visible)]="mesaDialog" [style]="{ width: '450px' }" [header]="tituloDialog" [modal]="true">
         <ng-template #content>
             <form [formGroup]="form">
                 <div class="flex flex-col gap-6">
                     <div>
                         <label for="numero" class="block font-bold mb-3">Número</label>
-                        <input maxlength="3" type="text" pInputText type="number" id="numero" formControlName="numero" required
+                        <input maxlength="3" pInputText type="number" id="numero" formControlName="numero" required
                             autofocus fluid placeholder="Digite o número" />
                         <small class="text-red-500"
-                            *ngIf="form.get('numero')?.invalid && (form.get('numero')?.dirty || form.get('numero')?.touched)">Número
+                            *ngIf=" (form.get('numero')?.dirty || form.get('numero')?.touched)">Número
                             é requerido.</small>
                     </div>
                     <div>
                         <label for="description" class="block font-bold mb-3">Garcom</label>
-                        <p-select id="state" formControlName="garcomDestino" [options]="dropdownItems"
+                        <p-select id="state" formControlName="garcom" [options]="dropdownItems"
                             optionLabel="name" placeholder="Selecione um garçom" styleClass="w-full" appendTo="body" />
                         <small class="text-red-500"
-                            *ngIf="form.get('garcomDestino')?.hasError('required') && (form.get('garcomDestino')?.dirty || form.get('garcomDestino')?.touched)">Garcom
+                            *ngIf="form.get('garcom')?.hasError('required') && (form.get('garcom')?.dirty || form.get('garcom')?.touched)">Garcom
                             é requerido.</small>
                         <small class="text-red-500"
                             *ngIf="form.get('numero')?.hasError('invalidNumero') && (form.get('numero')?.dirty || form.get('numero')?.touched)">Número
@@ -71,7 +66,12 @@
 
         <ng-template #footer>
             <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+            @if (salvar) {
             <p-button label="Save" icon="pi pi-check" (click)="saveMesa()" [disabled]="form.invalid" />
+            }
+            @if (!salvar) {
+            <p-button label="Editar" icon="pi pi-check" (click)="updateMesa()" />
+            }
         </ng-template>
     </p-dialog>
     <p-confirmDialog [style]="{ width: '450px' }" />

@@ -81,6 +81,7 @@ export class Garcom implements OnInit {
     garcom!: GarcomModel;
 
     form!: FormGroup;
+    formSearch!: FormGroup;
 
     submitted: boolean = false;
 
@@ -103,13 +104,15 @@ export class Garcom implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.createSearchForm();
         this.createForm();
-         this.form
+        this.formSearch
             .get('search')
             ?.valueChanges.pipe(debounceTime(1000))
             .subscribe((valor) => {
                 this.loadData({ search: valor });
             });
+
         this.loadData();
     }
 
@@ -118,12 +121,16 @@ export class Garcom implements OnInit {
             id: [null],
             nome: [null, [Validators.required]],
             cpf: [null, [Validators.required, CpfValidator.validate]],
-            status: [true],
+            status: [true]
+        });
+    }
+     createSearchForm() {
+        this.formSearch = this.formBuilder.group({
             search: [null]
         });
     }
     clearSearch() {
-        this.form.get('search')?.setValue(null);
+        this.formSearch.get('search')?.setValue(null);
        
     }
 
@@ -148,7 +155,8 @@ export class Garcom implements OnInit {
         this.first = event.first ?? 0;
         this.rows = event.rows ?? 10;
         this.page = event.page ?? 0;
-        this.loadData({ page: this.page, search: this.form.get('search')?.value });
+        
+        this.loadData({ page: this.page });
 
     }
 
@@ -193,6 +201,7 @@ export class Garcom implements OnInit {
                 this.garcomService.delete(garcom, this.garcomDeleteId).subscribe({
                     next: () => {
                         this.loadingService.hide();
+                        
                         this.loadData();
                         this.messageService.add({
                             severity: 'success',
@@ -225,6 +234,7 @@ export class Garcom implements OnInit {
                 this.garcomService.activate(garcom.id).subscribe({
                     next: () => {
                         this.loadingService.hide();
+                        
                         this.loadData();
                         this.messageService.add({
                             severity: 'success',
@@ -272,6 +282,7 @@ export class Garcom implements OnInit {
                     detail: 'Garcom salvo com sucesso',
                     life: 3000
                 });
+                
                 this.loadData();
                 this.hideDialog();
             },
@@ -312,6 +323,7 @@ export class Garcom implements OnInit {
                     detail: 'Garcom editado com sucesso',
                     life: 3000
                 });
+                
                 this.loadData();
                 this.hideDialog();
             },
