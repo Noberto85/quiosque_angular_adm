@@ -1,0 +1,74 @@
+<div class="card">
+    <p-toast></p-toast>
+    <p-toolbar styleClass="mb-4 gap-2">
+        <ng-template pTemplate="left">
+            <p-button pRipple severity="success" label="Novo" icon="pi pi-plus" class="mr-2" (click)="openNew()" />
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="cardapios()" [rows]="10" [paginator]="false"
+        [globalFilterFields]="['categoria.nome']"
+        [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
+        [showCurrentPageReport]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="categoria.nome" style="min-width:14rem">
+                    Categoria <p-sortIcon field="categoria.nome"></p-sortIcon>
+                </th>
+                <th style="min-width:14rem">
+                    Produtos
+                </th>
+                <th style="min-width:10rem">Ações</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cardapio>
+            <tr>
+                <td>{{ cardapio.categoria?.nome }}</td>
+                <td>
+                    <span *ngFor="let produto of cardapio.produtos; let last = last">
+                        {{ produto.nome }}<span *ngIf="!last">, </span>
+                    </span>
+                </td>
+                <td>
+                    <p-button pRipple icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" severity="success" (click)="editCardapio(cardapio)" />
+                    <p-button pRipple icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteCardapio(cardapio)" />
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                No total existem {{ cardapios() ? cardapios().length : 0 }} cardápios.
+            </div>
+        </ng-template>
+    </p-table>
+    
+    <p-paginator (onPageChange)="onPageChange($event)" 
+            [first]="first" [rows]="rows" 
+            [totalRecords]="totalRecords"  />
+
+    <p-dialog [(visible)]="cardapioDialog" [style]="{ width: '450px' }" header="Detalhes do Cardápio" [modal]="true" styleClass="p-fluid">
+        <ng-template pTemplate="content">
+            <form [formGroup]="form">
+                <div class="field">
+                    <label for="categoria">Categoria</label>
+                    <p-select formControlName="categoria" [options]="categorias()" optionLabel="nome" placeholder="Selecione uma Categoria" appendTo="body"></p-select>
+                    <small class="p-error" *ngIf="submitted && !form.get('categoria')?.value">Categoria é obrigatória.</small>
+                </div>
+                
+                <div class="field">
+                    <label for="produtos">Produtos</label>
+                    <p-multiSelect formControlName="produtos" [options]="produtos()" optionLabel="nome" placeholder="Selecione os Produtos" appendTo="body" display="chip"></p-multiSelect>
+                    <small class="p-error" *ngIf="submitted && !form.get('produtos')?.value">Produtos são obrigatórios.</small>
+                </div>
+            </form>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+            <p-button label="Salvar" icon="pi pi-check" text (click)="saveCardapio()" />
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog [style]="{ width: '450px' }" />
+</div>

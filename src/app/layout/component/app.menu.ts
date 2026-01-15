@@ -21,7 +21,7 @@ export class AppMenu {
     model: MenuItem[] = [];
 
     ngOnInit() {
-    
+
         const claims = this.tokenService.getClaim();
         if (claims) {
             if (claims.Roles.includes("ROLE_SYSTEM_ADMIN")) {
@@ -39,11 +39,15 @@ export class AppMenu {
                     {
                         label: 'Administração',
                         items: [
-                            { label: 'Cadastro', items: [
-                                { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] },
-                                 { label: 'Mesa', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/mesa'] },
-                            ] },
-                           
+                            {
+                                label: 'Cadastro', items: [
+                                    { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] },
+                                    { label: 'Mesa', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/mesa'] },
+                                    { label: 'Produto', icon: 'pi pi-fw pi-box', routerLink: ['/cadastro/produto'] },
+                                    { label: 'Cardápio', icon: 'pi pi-fw pi-book', routerLink: ['/cadastro/cardapio'] },
+                                    { label: 'Categoria', icon: 'pi pi-fw pi-tag', routerLink: ['/cadastro/categoria'] }
+                                ]
+                            },
                             { label: 'Pedidos', icon: 'pi pi-fw pi-list', routerLink: ['/pedidos'] }
                         ]
                     },
