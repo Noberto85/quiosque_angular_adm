@@ -84,7 +84,7 @@
                 <p-tag [value]="returnStatus(pedido.status)" [severity]="getSeverity(pedido.status)" />
             </td>
             <td>
-                <span class="font-bold text-lg">{{ pedido.dataInit | timeElapsed : now() : pedido.status : pedido.dataInit: pedido.dataFim }}</span>
+                <span class="font-bold text-lg">{{ pedido.dataInit | timeElapsed : now() : pedido.status : pedido.dataContagem: pedido.dataFim }}</span>
             </td>
             <td>
                  @if (pedido.status === 'awaiting_preparation') {
@@ -106,6 +106,16 @@
                     [outlined]="true"
                     class="mr-2"
                     (click)="updateStatus(pedido, 'PRONTO')" />
+                }
+                 @if (pedido.status === 'ready') {
+                     <p-button
+                    label="Iniciar Entrega" 
+                    icon="pi pi-truck" 
+                    severity="success" 
+                    [rounded]="true" 
+                    [outlined]="true"
+                    class="mr-2"
+                    (click)="updateStatus(pedido, 'EM_ENTREGA')" />
                 }
                 @if (pedido.status === 'delivering') {
                      <p-button

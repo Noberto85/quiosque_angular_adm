@@ -68,10 +68,13 @@ export class Pedidos implements OnInit {
     pageSize: number = 10;
     form!: FormGroup;
     statusOptions = [
-        { label: 'Em Andamento', value: 'EM_ANDAMENTO' },
-        { label: 'Concluído', value: 'CONCLUIDO' },
-        { label: 'Aguardando Pagamento', value: 'AGUARDANDO_PAGAMENTO' },
-        { label: 'Cancelado', value: 'CANCELADO' }
+        { label: 'Aguardando Pagamento', value: 'pending' },
+        { label: 'Aguardando Preparo', value: 'awaiting_preparation' },
+        { label: 'Em Preparação', value: 'preparing' },
+        { label: 'Pronto', value: 'ready' },
+        { label: 'Em Entrega', value: 'delivering' },
+        { label: 'Entregue', value: 'completed' },
+        { label: 'Cancelado', value: 'cancelled' }
     ];
 
     ngOnInit() {
@@ -144,10 +147,15 @@ export class Pedidos implements OnInit {
 
     getSeverity(status: string) {
         switch (status) {
+            case 'completed':
+            case 'ready':
             case 'delivering':
                 return 'success';
             case 'preparing':
+            case 'awaiting_preparation':
                 return 'info';
+            case 'pending':
+                return 'warning';
             case 'cancelled':
                 return 'danger';
             default:
@@ -155,7 +163,7 @@ export class Pedidos implements OnInit {
         }
     }
 
-     updateStatus(pedido: PedidoModel, status: 'EM_PREPARACAO' | 'PRONTO' | 'ENTREGUE') {
+     updateStatus(pedido: PedidoModel, status: string) {
         if (!pedido.id) return;
 
         this.pedidoService.updateStatus(pedido.id, status).subscribe({
@@ -171,18 +179,22 @@ export class Pedidos implements OnInit {
 
     returnStatus(status: string) {
         switch (status) {
-            case 'delivering':
-                return 'Concluído';
-             case 'awaiting_preparation':
-                return 'Aguardando Preparação';
+            case 'pending':
+                return 'Aguardando Pagamento';
+            case 'awaiting_preparation':
+                return 'Aguardando Preparo';
             case 'preparing':
-                return 'Em Andamento';
+                return 'Em Preparação';
+            case 'ready':
+                return 'Pronto';
+            case 'delivering':
+                return 'Em Entrega';
+            case 'completed':
+                return 'Entregue';
             case 'cancelled':
                 return 'Cancelado';
-             case 'completed':
-                return 'Concluído';
             default:
-                return 'Aguardando Pagamento';
+                return status;
         }
     }
 

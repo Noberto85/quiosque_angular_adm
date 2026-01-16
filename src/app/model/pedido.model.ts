@@ -14,6 +14,7 @@ export interface PedidoModel {
     mesa?: string;
     dataInit?: string;
     dataFim?: string ;
+    dataContagem?: string;
     status?: string;
     itens?: PedidoItemModel[];
     total?: number;

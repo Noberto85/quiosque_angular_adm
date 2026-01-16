@@ -8,7 +8,7 @@ export class TimeElapsedPipe implements PipeTransform {
 
   transform(startTime: string, now: Date, status?: string, initTime?: string, endTime?: string): string {
 
-    if (status === 'awaiting_preparation' || status === 'preparing' || status === 'delivering') {
+    if (status === 'awaiting_preparation' || status === 'preparing' || status === 'ready' || status === 'delivering') {
       if (!startTime) return '00:00:00';
 
       const start = new Date(startTime).getTime();
@@ -34,6 +34,7 @@ export class TimeElapsedPipe implements PipeTransform {
       return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
     }
     if (status === 'completed') {
+      debugger
       if (!endTime) return '00:00:00';
       if (!initTime) return '00:00:00';
 

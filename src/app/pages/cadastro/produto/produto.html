@@ -32,11 +32,11 @@
             <tr>
                 <td>
                     @if (produto.imagem) {
-                    <img [src]="'data:image/png;base64,' + produto.imagem || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrOinWaky8b3GG4kbCZlxiA93bRXWBv1hBEg&s'"
+                    <img [src]="'data:image/png;base64,' + produto.imagem"
                         [alt]="produto.nome" width="50" class="shadow-4" />
                     }
                     @if (!produto.imagem) {
-                    <img src="assets/img/img-not-found.jpg" [alt]="produto.nome" width="50" class="shadow-4" />
+                    <img src="assets/img/800por450.png" [alt]="produto.nome" width="50" class="shadow-4" />
                     }
                 </td>
                 <td>{{ produto.nome }}</td>
