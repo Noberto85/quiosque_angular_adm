@@ -4,6 +4,7 @@ import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { adminGuard } from './app/guards/admin.guard';
 
 
 export const appRoutes: Routes = [
@@ -11,7 +12,7 @@ export const appRoutes: Routes = [
         path: '',
         component: AppLayout,
         children: [
-            { path: '', component: Dashboard },
+            { path: '', component: Dashboard, canActivate: [adminGuard] },
             { path: 'cadastro',loadChildren: () => import('./app/pages/cadastro/cadastro.routes') },
             { path: 'pedidos', loadChildren: () => import('./app/pages/pedidos/pedidos.routes') },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
