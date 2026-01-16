@@ -20,11 +20,3 @@ export interface PedidoModel {
     cliente?: string;
     observacoes?: string;
 }
-/*  private Long id;
-    private Integer quantidade;
-    private BigDecimal valorSoma;
-    private String descricao;
-    private BigDecimal preco;
-    private String categoria;
-    private byte[] imagem;
-    private Integer avaliacao; */

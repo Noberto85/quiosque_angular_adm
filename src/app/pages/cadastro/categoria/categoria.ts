@@ -124,8 +124,8 @@ loadingService = inject(LoadingService);
             this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Categoria deletada com sucesso' });
             this.loadData();
           },
-          error: () => {
-            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao deletar categoria' });
+          error: (e) => {
+            this.messageService.add({ severity: 'error', summary: 'Erro', detail: e.error.message });
             this.loadingService.hide();
           }
         });

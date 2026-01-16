@@ -7,6 +7,7 @@ export interface ProdutoModel {
     preco?: number;
     imagem?: any;
     urlImagem?: string;
-    avaliacao?: number;
     categoriaDto?: CategoriaModel;
+    categoriaId?: string;
+    ativo?: boolean;
 }

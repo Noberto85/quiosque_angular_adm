@@ -63,15 +63,17 @@ export class Produto implements OnInit {
     tokenService = inject(TokenService);
     produtoService = inject(ProdutoService);
     categoriaService = inject(CategoriaService);
-    
+
     produtoDialog: boolean = false;
     categorias = signal<CategoriaModel[]>([]);
     produtos = signal<ProdutoModel[]>([]);
-    
+
+    update: boolean = false;
+
     produto!: ProdutoModel;
     form!: FormGroup;
     submitted: boolean = false;
-    
+
     @ViewChild('dt') dt!: Table;
 
     first: number = 0;
@@ -79,14 +81,14 @@ export class Produto implements OnInit {
     totalRecords: number = 0;
     page: number = 0;
     pageSize: number = 10;
-    
-    uploadedFiles: any[] = [];
+
+    uploadedFiles: any;
 
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private formBuilder: FormBuilder
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.createForm();
@@ -107,7 +109,7 @@ export class Produto implements OnInit {
     }
 
     loadData(params?: ParamsRequest) {
-        
+
         this.loadingService.show();
         const claim = this.tokenService.getClaim();
         this.produtoService.findAllPageable(params, claim.quiosque_id).subscribe({
@@ -124,7 +126,7 @@ export class Produto implements OnInit {
     }
 
     loadCategorias() {
-        debugger
+
         const claim = this.tokenService.getClaim();
         this.categoriaService.findAll(claim.quiosque_id).subscribe({
             next: (data) => {
@@ -151,7 +153,6 @@ export class Produto implements OnInit {
         this.submitted = false;
         this.produtoDialog = true;
         this.form.reset();
-        this.form.patchValue({ avaliacao: 0 });
     }
 
     editProduto(produto: ProdutoModel) {
@@ -162,9 +163,31 @@ export class Produto implements OnInit {
             descricao: produto.descricao,
             preco: produto.preco,
             categoria: produto.categoriaDto,
-            avaliacao: produto.avaliacao,
-            urlImagem: produto.urlImagem
+            imagem: produto.imagem
+
         });
+    }
+
+    updateProduto() {
+        this.submitted = true;
+        if (this.form.valid) {
+
+            const produtoToSave: ProdutoModel = {
+                ...this.produto,
+                ...this.form.value,
+                categoriaId: this.form.value.categoria.id
+            };
+            this.produtoService.update(produtoToSave).subscribe({
+                next: () => {
+                    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Produto Atualizado', life: 3000 });
+                    this.hideDialog();
+                    this.loadData();
+                },
+                error: () => {
+                    this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar produto', life: 3000 });
+                }
+            });
+        }
     }
 
     deleteProduto(produto: ProdutoModel) {
@@ -172,14 +195,40 @@ export class Produto implements OnInit {
             message: 'Você tem certeza que deseja deletar ' + produto.nome + '?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
             accept: () => {
                 this.produtoService.delete(produto.id).subscribe({
                     next: () => {
                         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Produto deletado', life: 3000 });
                         this.loadData();
                     },
-                    error: () => {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao deletar produto', life: 3000 });
+                    error: (e) => {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: e.error.message, life: 3000 });
+                    }
+                });
+            }
+        });
+    }
+
+    habilitaDEsabilita(produto: ProdutoModel) {
+
+        this.confirmationService.confirm({
+            message: 'Você tem certeza que deseja ' + (produto.ativo ? 'desabilitar' : 'habilitar') + ' ' + produto.nome + '?',
+            header: 'Confirmar',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
+            accept: () => {
+
+                this.produtoService.habilitaDesabilita(produto.id, produto?.ativo ?? false).subscribe({
+                    next: () => {
+
+                        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Produto ' + (produto.ativo ? 'desabilitado' : 'habilitado'), life: 3000 });
+                        this.loadData();
+                    },
+                    error: (e) => {
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: e.error.message, life: 3000 });
                     }
                 });
             }
@@ -193,12 +242,13 @@ export class Produto implements OnInit {
 
     saveProduto() {
         this.submitted = true;
-
+        debugger
         if (this.form.valid) {
             const claim = this.tokenService.getClaim();
             const produtoToSave: ProdutoModel = {
                 ...this.produto,
-                ...this.form.value
+                ...this.form.value,
+                categoriaId: this.form.value.categoria.id
             };
 
             if (this.produto.id) {
@@ -209,7 +259,7 @@ export class Produto implements OnInit {
                         this.loadData();
                     },
                     error: () => {
-                         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar produto', life: 3000 });
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar produto', life: 3000 });
                     }
                 });
             } else {
@@ -220,24 +270,34 @@ export class Produto implements OnInit {
                         this.loadData();
                     },
                     error: () => {
-                         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao criar produto', life: 3000 });
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao criar produto', life: 3000 });
                     }
                 });
             }
         }
     }
-    
+
     onUpload(event: any) {
-         for(let file of event.files) {
-            this.uploadedFiles.push(file);
-             const reader = new FileReader();
-             reader.onload = (e: any) => {
-                 this.form.patchValue({ imagem: e.target.result.split(',')[1] }); // Store base64 without prefix
-                 this.produto.urlImagem = e.target.result; // Update preview
-             };
-             reader.readAsDataURL(file);
+        const file = event.files[0];
+        if (file.size > 204800) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erro',
+                detail: 'Arquivo maior que 200 KB não permitido'
+            });
+            return;
         }
-        
-        this.messageService.add({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
+
+        this.uploadedFiles = [file];
+
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+            this.form.patchValue({ imagem: e.target.result.split(',')[1] }); // base64 sem prefixo
+            this.produto.imagem = e.target.result.split(',')[1]; // preview
+        };
+        reader.readAsDataURL(file);
+
+        this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
     }
+
 }
