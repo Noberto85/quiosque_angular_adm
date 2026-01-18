@@ -50,7 +50,7 @@ export class AppMenu {
                             { label: 'Pedidos', icon: 'pi pi-fw pi-list', routerLink: ['/pedidos'] }
                         ]
                     },
-                   /*  {
+                    {
                         label: 'UI Components',
                         items: [
                             { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
@@ -177,7 +177,7 @@ export class AppMenu {
                                 target: '_blank'
                             }
                         ]
-                    } */
+                    }
                 ];
             }
         }

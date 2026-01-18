@@ -78,6 +78,7 @@ export class Pedidos implements OnInit {
     ];
 
     ngOnInit() {
+        
         this.createForm();
         this.form
             .get('search')
