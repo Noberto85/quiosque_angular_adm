@@ -8,6 +8,7 @@ import { appRoutes } from './app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
 import { provideNgxMask } from 'ngx-mask';
 import { MessageService } from 'primeng/api';
+import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
         providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
         provideNgxMask(),
         MessageService,
-        { provide: LOCALE_ID, useValue: 'pt-BR' }
+        { provide: LOCALE_ID, useValue: 'pt-BR' },
+        { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { timezone: 'America/Sao_Paulo' } }
     ]
 };
