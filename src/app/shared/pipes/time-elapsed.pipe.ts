@@ -34,7 +34,7 @@ export class TimeElapsedPipe implements PipeTransform {
       return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
     }
     if (status === 'completed') {
-      debugger
+      
       if (!endTime) return '00:00:00';
       if (!initTime) return '00:00:00';
 

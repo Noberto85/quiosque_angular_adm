@@ -43,7 +43,7 @@ import { TagModule } from 'primeng/tag';
 
                     <div class="font-semibold my-4">Overlay</div>
                     <div class="flex gap-6">
-                        <p-overlaybadge value="2">
+                        <p-overlaybadge value="222">
                             <i class="pi pi-bell" style="font-size: 2rem"></i>
                         </p-overlaybadge>
                         <p-overlaybadge value="4" severity="danger">

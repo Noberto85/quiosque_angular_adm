@@ -285,6 +285,7 @@ export class Garcom implements OnInit {
                 
                 this.loadData();
                 this.hideDialog();
+                this.form.reset();
             },
             error: (error) => {
                 this.loadingService.hide();
@@ -297,7 +298,7 @@ export class Garcom implements OnInit {
             }
         });
 
-        this.form.reset();
+        
     }
 
     editarGarcom(garcom: GarcomModel) {
