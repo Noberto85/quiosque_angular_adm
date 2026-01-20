@@ -2,11 +2,13 @@ import { Injectable, signal, inject } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { TokenService } from './token.service';
 import { MessageService } from 'primeng/api';
+import { NotificationService } from './notificacao.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class WebSocketService {
+    private notificationService = inject(NotificationService);
     private socket: WebSocket | null = null;
     public pedidoCount = signal<number>(0);
     private tokenService = inject(TokenService);
@@ -37,6 +39,7 @@ export class WebSocketService {
             console.log('New message received', event.data);
             this.messageService.add({ severity: 'info', summary: 'Novo Pedido', detail: 'Um novo pedido foi recebido!' });
             this.pedidoCount.update(count => count + 1);
+            this.notificationService.atualizarPedidos(this.pedidoCount());
         };
 
         this.socket.onclose = () => {

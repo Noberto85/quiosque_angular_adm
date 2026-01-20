@@ -60,6 +60,7 @@ export class Mesa implements OnInit {
     dropdownItems = [];
 
     mesas = signal<MesaModel[]>([]);
+    selectedMesas!: MesaModel[] | null;
     mesa!: MesaModel;
     form!: FormGroup;
     submitted: boolean = false;
@@ -203,7 +204,6 @@ export class Mesa implements OnInit {
     }
 
     saveMesa() {
-debugger
         this.submitted = true;
 
         if (this.form.valid) {
@@ -223,6 +223,13 @@ debugger
                     this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.error.message, life: 3000 });
                 }
             });
+        }
+    }
+
+    generateQrcode(){
+        if(this.selectedMesas?.length === 0){
+            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Selecione uma mesa', life: 3000 });
+            return;
         }
     }
 }

@@ -7,26 +7,22 @@
     </ng-template>
 </p-panel>
 
-<p-table #dt [value]="pedidos()" [rows]="10" stripedRows
-    [globalFilterFields]="['codigo']"
-    [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id"
-    [rowsPerPageOptions]="[10, 25, 50]"
+<p-table #dt [value]="pedidos()" [rows]="10" stripedRows [globalFilterFields]="['codigo']"
+    [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id" [rowsPerPageOptions]="[10, 25, 50]"
     [loading]="loading()">
-    
-    <ng-template pTemplate="caption">
-        <form [formGroup]="form">
-                    <div class="flex justify-between items-center flex-column sm:flex-row">
-                            <p-iconfield iconPosition="left" class="ml-auto">
-                                <p-inputicon>
-                                    <i class="pi pi-search"></i>
-                                </p-inputicon>
-                                <input class="w-[20rem]" pInputText type="text" formControlName="search" placeholder="Procure por codigo ou cliente" />
-                                  <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
-                            </p-iconfield>
-                     </div>
-                </form>
+    <ng-template #caption>
+        <div class="flex">
+            <p-button label="Reload" [outlined]="true" (click)="loadPedidos()" icon="pi  pi-spinner" />
+            <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input class="w-[20rem]" pInputText type="text" formControlName="search"
+                    placeholder="Procure por codigo ou cliente" />
+                <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
+            </p-iconfield>
+        </div>
     </ng-template>
-
     <ng-template pTemplate="header">
         <tr>
             <th style="width: 5rem"></th>
@@ -38,7 +34,7 @@
                 Cliente
                 <p-sortIcon field="nomePedido" />
             </th>
-             <th pSortableColumn="cliente" style="min-width:16rem">
+            <th pSortableColumn="cliente" style="min-width:16rem">
                 Telefone
                 <p-sortIcon field="cliente" />
             </th>
@@ -46,17 +42,17 @@
                 Mesa
                 <p-sortIcon field="mesa" />
             </th>
-             <th pSortableColumn="total" style="min-width:8rem">
+            <th pSortableColumn="total" style="min-width:8rem">
                 Total
                 <p-sortIcon field="total" />
             </th>
             <th pSortableColumn="dataInit" style="min-width:12rem">
                 Data/Hora Início
-                <p-sortIcon field="dataInit" /> 
+                <p-sortIcon field="dataInit" />
             </th>
-             <th pSortableColumn="dataFim" style="min-width:12rem">
+            <th pSortableColumn="dataFim" style="min-width:12rem">
                 Data/Hora conclusão
-                <p-sortIcon field="dataFim" /> 
+                <p-sortIcon field="dataFim" />
             </th>
             <th pSortableColumn="status" style="min-width: 12rem">
                 Status
@@ -71,7 +67,9 @@
     <ng-template #body pTemplate="body" let-pedido let-expanded="expanded">
         <tr>
             <td>
-                <button type="button" pButton pRipple [pRowToggler]="pedido" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                <button type="button" pButton pRipple [pRowToggler]="pedido"
+                    class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
             </td>
             <td>#{{ pedido.codigo }}</td>
             <td>{{ pedido.nomePedido }}</td>
@@ -84,51 +82,28 @@
                 <p-tag [value]="returnStatus(pedido.status)" [severity]="getSeverity(pedido.status)" />
             </td>
             <td>
-                <span class="font-bold text-lg">{{ pedido.dataInit | timeElapsed : now() : pedido.status : pedido.dataContagem: pedido.dataFim }}</span>
+                <span class="font-bold text-lg">{{ pedido.dataInit | timeElapsed : now() : pedido.status :
+                    pedido.dataContagem: pedido.dataFim }}</span>
             </td>
             <td>
-                 @if (pedido.status === 'awaiting_preparation') {
-                     <p-button
-                    label="Iniciar Preparação" 
-                    icon="pi pi-spinner" 
-                    severity="success" 
-                    [rounded]="true" 
-                    [outlined]="true"
-                    class="mr-2"
-                    (click)="updateStatus(pedido, 'EM_PREPARACAO')" />
+                @if (pedido.status === 'awaiting_preparation') {
+                <p-button label="Iniciar Preparação" icon="pi pi-spinner" severity="success" [rounded]="true"
+                    [outlined]="true" class="mr-2" (click)="updateStatus(pedido, 'EM_PREPARACAO')" />
                 }
-                 @if (pedido.status === 'preparing') {
-                     <p-button
-                    label="Concluir" 
-                    icon="pi pi-check" 
-                    severity="success" 
-                    [rounded]="true" 
-                    [outlined]="true"
-                    class="mr-2"
-                    (click)="updateStatus(pedido, 'PRONTO')" />
+                @if (pedido.status === 'preparing') {
+                <p-button label="Concluir" icon="pi pi-check" severity="success" [rounded]="true" [outlined]="true"
+                    class="mr-2" (click)="updateStatus(pedido, 'PRONTO')" />
                 }
-                 @if (pedido.status === 'ready') {
-                     <p-button
-                    label="Iniciar Entrega" 
-                    icon="pi pi-truck" 
-                    severity="success" 
-                    [rounded]="true" 
-                    [outlined]="true"
-                    class="mr-2"
-                    (click)="updateStatus(pedido, 'EM_ENTREGA')" />
+                @if (pedido.status === 'ready') {
+                <p-button label="Iniciar Entrega" icon="pi pi-truck" severity="success" [rounded]="true"
+                    [outlined]="true" class="mr-2" (click)="updateStatus(pedido, 'EM_ENTREGA')" />
                 }
                 @if (pedido.status === 'delivering') {
-                     <p-button
-                    label="Entregue" 
-                    icon="pi pi-check" 
-                    severity="success" 
-                    [rounded]="true" 
-                    [outlined]="true"
-                    class="mr-2"
-                    (click)="updateStatus(pedido, 'ENTREGUE')" />
+                <p-button label="Entregue" icon="pi pi-check" severity="success" [rounded]="true" [outlined]="true"
+                    class="mr-2" (click)="updateStatus(pedido, 'ENTREGUE')" />
                 }
-               
-            
+
+
             </td>
         </tr>
     </ng-template>
@@ -151,29 +126,26 @@
 
                     <p-table [value]="pedido.itens" dataKey="id" styleClass="p-datatable-sm">
                         <ng-template pTemplate="header">
-                            <tr>
-                                <th>Produto</th>
-                                 <th>Categoria</th>
-                                <th>Quantidade</th>
-                                <th>Preço Unitário</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-item>
-                            <tr>
-                                <td>{{ item.descricao }}</td>
-                                <td>{{ item.categoria }}</td>
-                                <td>{{ item.quantidade }}</td>
-                                <td>{{ item.preco | currency:'BRL' }}</td>
-                               
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </div>
-            </td>
+        <tr>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Quantidade</th>
+            <th>Preço Unitário</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td>{{ item.descricao }}</td>
+            <td>{{ item.categoria }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.preco | currency:'BRL' }}</td>
+
         </tr>
     </ng-template>
 </p-table>
-<p-paginator (onPageChange)="onPageChange($event)" 
-            [first]="first" [rows]="rows" 
-            [totalRecords]="totalRecords"  />
-  
+</div>
+</td>
+</tr>
+</ng-template>
+</p-table>
+<p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" />

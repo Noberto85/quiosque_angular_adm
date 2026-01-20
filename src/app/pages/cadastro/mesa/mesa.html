@@ -4,14 +4,27 @@
         <ng-template pTemplate="left">
             <p-button pRipple severity="success" label="Novo" icon="pi pi-plus" class="mr-2" (click)="openNew()" />
         </ng-template>
+          <ng-template #end>
+                <p-button label="Gerar qrcode" icon="pi pi-upload" severity="secondary" (click)="generateQrcode()" />
+            </ng-template>
     </p-toolbar>
 
-    <p-table #dt [value]="mesas()" [rows]="10" [paginator]="false" [globalFilterFields]="['numero', 'capacidade']"
-        [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id"
+    <p-table #dt 
+    [value]="mesas()" 
+    [rows]="10" 
+    [paginator]="false" 
+    [(selection)]="selectedMesas"
+    [globalFilterFields]="['numero', 'capacidade']"
+    [tableStyle]="{ 'min-width': '75rem' }" 
+    [rowHover]="true" 
+    dataKey="id"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entradas"
         [showCurrentPageReport]="true">
         <ng-template pTemplate="header">
             <tr>
+                 <th style="width: 3rem">
+                        <p-tableHeaderCheckbox />
+                </th>
                 <th pSortableColumn="numero" style="min-width:10rem">
                     Número <p-sortIcon field="numero"></p-sortIcon>
                 </th>
@@ -23,6 +36,9 @@
         </ng-template>
         <ng-template pTemplate="body" let-mesa>
             <tr>
+                 <td style="width: 3rem">
+                        <p-tableCheckbox [value]="mesa" />
+                    </td>
                 <td>Mesa: &nbsp;{{ mesa.numero }}</td>
                 <td>{{ mesa.garcom }}</td>
                 <td>

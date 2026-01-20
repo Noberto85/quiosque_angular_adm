@@ -94,6 +94,10 @@ export class Pedidos implements OnInit {
         }, 1000);
     }
     
+    loadPedidos() {
+        this.loadData();
+    }
+    
     ngOnDestroy() {
         if (this.intervalId) {
             clearInterval(this.intervalId);
@@ -109,7 +113,7 @@ export class Pedidos implements OnInit {
 
     clearSearch() {
         this.form.get('search')?.setValue(null);
-       
+    
     }
 
     loadData(params?: ParamsRequest) {

@@ -10,6 +10,7 @@ import { WebSocketService } from '@/service/websocket.service';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadge } from "primeng/overlaybadge";
 import { Toast } from "primeng/toast";
+import { NotificationService } from '@/service/notificacao.service';
 
 @Component({
     selector: 'app-topbar',
@@ -43,8 +44,8 @@ import { Toast } from "primeng/toast";
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button *ngIf="webSocketService.pedidoCount() > 0" type="button" class="layout-topbar-action" (click)="resetMessages()">
-                        <p-overlaybadge  [value]="webSocketService.pedidoCount()">
+                    <button  type="button" class="layout-topbar-action" (click)="resetMessages()">
+                        <p-overlaybadge  [value]="this.notificationService.pedidos$ | async">
                             <i class="pi pi-bell" style="font-size: 2rem"></i>
                         </p-overlaybadge>
                         <span>Messages</span>
@@ -60,10 +61,13 @@ import { Toast } from "primeng/toast";
     </div>`
 })
 export class AppTopbar {
+    
     items!: MenuItem[];
     private tokenService = inject(TokenService);
     private router = inject(Router);
     public webSocketService = inject(WebSocketService);
+    protected notificationService = inject(NotificationService);
+    notification$ = this.notificationService.pedidos$;
 
     constructor(public layoutService: LayoutService) { }
 
@@ -85,6 +89,7 @@ export class AppTopbar {
     }
 
     resetMessages() {
+        this.notificationService.limparPedidos();
         this.webSocketService.resetCount();
         this.router.navigate(['/pedidos'], { queryParamsHandling: 'merge' });
 

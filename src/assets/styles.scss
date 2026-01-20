@@ -3,3 +3,8 @@
 @use './layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './demo/demo.scss';
+
+
+.p-button:hover {
+  cursor: pointer !important;
+}
