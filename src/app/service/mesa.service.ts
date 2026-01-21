@@ -9,7 +9,7 @@ import { environment } from "src/environments/environment";
     providedIn: 'root'
 })
 export class MesaService {
-   
+
     urlMesaBase = '/api/v1/admin/mesa';
     constructor(private _http: HttpClient) { }
 
@@ -26,7 +26,7 @@ export class MesaService {
             .set('orderBy', orderBy)
             .set('direction', direction);
 
-        if (numero) {   
+        if (numero) {
             queryParams = queryParams.set('numero', numero);
         }
 
@@ -36,12 +36,16 @@ export class MesaService {
     delete(mesaId: any): Observable<any> {
         return this._http.delete<any>(`${environment.apiUrl}${this.urlMesaBase}/${mesaId}/disable`);
     }
-        
+
     activate(mesaId: any): Observable<any> {
-        return this._http.put<any>(`${environment.apiUrl}${this.urlMesaBase}/activate`, {id: mesaId});
+        return this._http.put<any>(`${environment.apiUrl}${this.urlMesaBase}/activate`, { id: mesaId });
     }
-        
+
     update(mesa: MesaModel): Observable<any> {
         return this._http.put<any>(`${environment.apiUrl}${this.urlMesaBase}/update`, mesa);
+    }
+
+    downloadQrcode(ids: any[]): Observable<any> {
+        return this._http.post<any>(`${environment.apiUrl}${this.urlMesaBase}/download-pdf`, { ids: ids });
     }
 }

@@ -24,6 +24,7 @@ import { TokenService } from '@/service/token.service';
 import { Select } from "primeng/select";
 import { GarcomService } from '@/service/garcom.service';
 
+
 @Component({
     selector: 'app-mesa',
     standalone: true,
@@ -60,7 +61,7 @@ export class Mesa implements OnInit {
     dropdownItems = [];
 
     mesas = signal<MesaModel[]>([]);
-    selectedMesas!: MesaModel[] | null;
+    selectedMesas: MesaModel[]=[];
     mesa!: MesaModel;
     form!: FormGroup;
     submitted: boolean = false;
@@ -75,6 +76,7 @@ export class Mesa implements OnInit {
     totalRecords: number = 0;
     page: number = 0;
     pageSize: number = 10;
+    base64Image: string = '';
 
     constructor(
         private messageService: MessageService,
@@ -139,7 +141,7 @@ export class Mesa implements OnInit {
         this.submitted = false;
         this.mesaDialog = true;
         this.form.reset();
-       
+
     }
 
     editMesa(mesa: MesaModel) {
@@ -152,12 +154,12 @@ export class Mesa implements OnInit {
         });
         this.form.updateValueAndValidity();
 
-      
+
 
     }
 
-        updateMesa() {
-        
+    updateMesa() {
+
         this.submitted = true;
         if (this.form.valid) {
             const mesaToUpdate: MesaModel = {
@@ -191,7 +193,7 @@ export class Mesa implements OnInit {
                         this.loadData();
                     },
                     error: (error) => {
-                        this.messageService.add({ severity: 'error', summary: 'Erro', detail:  error.error.message, life: 3000 });
+                        this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.error.message, life: 3000 });
                     }
                 });
             }
@@ -226,10 +228,43 @@ export class Mesa implements OnInit {
         }
     }
 
-    generateQrcode(){
-        if(this.selectedMesas?.length === 0){
+    generateQrcode() {
+        
+        if (this.selectedMesas?.length === 0) {
             this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Selecione uma mesa', life: 3000 });
             return;
         }
+        const ids = this.selectedMesas.map(mesa => mesa.id);
+        this.loadingService.show();
+        this.mesaService.downloadQrcode(ids).subscribe({
+            next: (data) => {
+                this.loadingService.hide();
+                this.exportQrcode(data.pdf)
+            },
+            error: (error) => {
+                this.loadingService.hide(); 
+                this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.error.message, life: 3000 });
+            }
+        });
+       
+       
+    }
+    exportQrcode(image:string){
+        if (!image) {
+            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Nenhum QR Code gerado', life: 3000 });
+            return;
+        }
+         const byteArray = new Uint8Array(
+            atob(image).split('').map(char => char.charCodeAt(0))
+        );
+
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const fileUrl = URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = 'qrcode.pdf';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
     }
 }
