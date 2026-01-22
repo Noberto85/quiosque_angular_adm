@@ -34,6 +34,10 @@
                 Cliente
                 <p-sortIcon field="nomePedido" />
             </th>
+            <th pSortableColumn="garcom" style="min-width:16rem">
+                Garçom
+                <p-sortIcon field="garcom" />
+            </th>
             <th pSortableColumn="cliente" style="min-width:16rem">
                 Telefone
                 <p-sortIcon field="cliente" />
@@ -73,6 +77,7 @@
             </td>
             <td>#{{ pedido.codigo }}</td>
             <td>{{ pedido.nomePedido }}</td>
+            <td>{{ pedido.garcom }}</td>
             <td>{{ pedido.cliente | phone }}</td>
             <td>Mesa: &nbsp;{{ pedido.mesa }}</td>
             <td>{{ pedido.total | currency:'BRL' }}</td>

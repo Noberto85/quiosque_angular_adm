@@ -11,6 +11,7 @@ export interface PedidoModel {
     id?: string;
     codigo?: string;
     nomePedido?: string;
+    garcom?: string;
     mesa?: string;
     dataInit?: string;
     dataFim?: string ;
