@@ -44,9 +44,10 @@
                 <td>{{ produto.preco | currency:'BRL' }}</td>
                 <td>{{ produto.categoriaDto?.descricao }}</td>
                 <td>
-                    @if (produto.ativo) {
-                    <p-button pRipple icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
+                     <p-button pRipple icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
                         severity="success" (click)="editProduto(produto)" />
+                    @if (produto.ativo) {
+                   
                     <p-button pRipple icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
                         (click)="deleteProduto(produto)" />
                     }

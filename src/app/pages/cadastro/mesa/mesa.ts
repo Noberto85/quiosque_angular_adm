@@ -186,6 +186,8 @@ export class Mesa implements OnInit {
             message: 'Você tem certeza que deseja deletar a mesa ' + mesa.numero + '?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
             accept: () => {
                 this.mesaService.delete(mesa.id).subscribe({
                     next: () => {
