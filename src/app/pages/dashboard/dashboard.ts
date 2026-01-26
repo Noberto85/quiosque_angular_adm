@@ -1,9 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
 import { StatsWidget } from './components/statswidget';
 import { RecentSalesWidget } from './components/recentsaleswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
 import { DashboardModel, DashboardService, MaisVendidoModel } from '@/service/dashboard.service';
 import { TokenService } from '@/service/token.service';
 import { MessageService } from 'primeng/api';
@@ -11,7 +8,7 @@ import { Toast } from "primeng/toast";
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget, Toast],
+    imports: [StatsWidget, RecentSalesWidget, Toast],
     providers: [DashboardService],
     template: `
     <p-toast></p-toast>
@@ -19,7 +16,7 @@ import { Toast } from "primeng/toast";
             <app-stats-widget [dashboardModel]="dashboardModel" class="contents" />
         </div>
          <div class="grid grid-cols-12 gap-8 mt-8">
-            <div class="col-span-12  xl:col-span-6">
+            <div class="col-span-12  xl:col-span-4">
                 <app-recent-sales-widget [maisVendido]="dashboardModel.maisVendidos  ?? []" /> 
             <!--     <app-best-selling-widget /> -->
             </div>
@@ -31,6 +28,7 @@ import { Toast } from "primeng/toast";
     `
 })
 export class Dashboard implements OnInit {
+   
     dashboardModel: DashboardModel = {
         maisVendidos: [] as MaisVendidoModel[]
     }

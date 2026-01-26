@@ -92,8 +92,8 @@ export class Login {
                     this.loadingService.hide();
 
                     if (response) {
-                        this.tokenService.setToken(response.token)
-                        this.router.navigate(['/']);
+                        this.tokenService.setToken(response.token);
+                        this.redirectForRoles();
                     }
                 },
                 error: (error) => {
@@ -104,6 +104,18 @@ export class Login {
 
         } else {
             this.loginForm.markAllAsTouched();
+        }
+    }
+
+    private redirectForRoles() {
+        debugger
+        const claims = this.tokenService.getClaim();
+        if (claims) {
+            if (claims.Roles.includes("ROLE_SYSTEM_ADMIN")) {
+                this.router.navigate(['/system']);
+            } else {
+                this.router.navigate(['/']);
+            }
         }
     }
 }

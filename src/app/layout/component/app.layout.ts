@@ -6,13 +6,14 @@ import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppFooter } from './app.footer';
 import { LayoutService } from '../service/layout.service';
+import { TokenService } from '@/service/token.service';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
     imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
-        <app-topbar></app-topbar>
+        <app-topbar [viewAlerta]="viewAlerta"></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div class="layout-main">
@@ -24,6 +25,7 @@ import { LayoutService } from '../service/layout.service';
     </div> `
 })
 export class AppLayout {
+    viewAlerta: boolean = false;
     overlayMenuOpenSubscription: Subscription;
 
     menuOutsideClickListener: any;
@@ -35,8 +37,11 @@ export class AppLayout {
     constructor(
         public layoutService: LayoutService,
         public renderer: Renderer2,
-        public router: Router
+        public router: Router,
+        private tokenService: TokenService
     ) {
+        const claims = this.tokenService.getClaim();
+        this.viewAlerta = claims?.Roles?.includes('ROLE_ADMIN') ?? false;
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event) => {

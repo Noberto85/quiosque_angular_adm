@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+    import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
@@ -59,7 +59,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 <span class="text-surface-600 dark:text-surface-200 lg:text-xl">Accumsan in nisl nisi scelerisque</span>
                             </span>
                         </a>
-                        <p-button label="Go to Dashboard" routerLink="/" />
+                        <p-button label="Go to Dashboard1" routerLink="/" />
                     </div>
                 </div>
             </div>

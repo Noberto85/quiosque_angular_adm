@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input, input } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -44,7 +44,7 @@ import { NotificationService } from '@/service/notificacao.service';
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button  type="button" class="layout-topbar-action" (click)="resetMessages()">
+                    <button *ngIf="viewAlerta" type="button" class="layout-topbar-action" (click)="resetMessages()">
                         <p-overlaybadge  [value]="this.notificationService.pedidos$ | async">
                             <i class="pi pi-bell" style="font-size: 2rem"></i>
                         </p-overlaybadge>
@@ -61,7 +61,7 @@ import { NotificationService } from '@/service/notificacao.service';
     </div>`
 })
 export class AppTopbar {
-    
+    @Input()viewAlerta: boolean = false;
     items!: MenuItem[];
     private tokenService = inject(TokenService);
     private router = inject(Router);

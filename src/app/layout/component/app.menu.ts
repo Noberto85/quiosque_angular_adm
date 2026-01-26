@@ -25,10 +25,12 @@ export class AppMenu {
         const claims = this.tokenService.getClaim();
         if (claims) {
             if (claims.Roles.includes("ROLE_SYSTEM_ADMIN")) {
-                this.model.push({
-                    label: 'System Admin',
-                    items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
-                });
+                this.model = [
+                    {
+                        label: 'System Admin',
+                        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin'] }]
+                    }
+                ];
             }
             if (claims.Roles.includes("ROLE_ADMIN")) {
                 this.model = [

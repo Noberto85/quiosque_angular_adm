@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
+import { TokenService } from '@/service/token.service';
 
 @Component({
     selector: 'app-access',
@@ -21,7 +22,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                             <span class="text-muted-color mb-8">You do not have the necessary permisions. Please contact admins.</span>
                             <img src="https://primefaces.org/cdn/templates/sakai/auth/asset-access.svg" alt="Access denied" class="mb-8" width="80%" />
                             <div class="col-span-12 mt-8 text-center">
-                                <p-button label="Go to Dashboard" routerLink="/" severity="warn" />
+                                <p-button label="Go to Dashboard" (click)="redirectToDashboard()" severity="warn" />
                             </div>
                         </div>
                     </div>
@@ -29,4 +30,30 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
             </div>
         </div>`
 })
-export class Access {}
+export class Access {
+
+    tokenService = inject(TokenService);
+    router = inject(Router);
+
+    redirectToDashboard() {
+
+        const token = this.tokenService.getToken();
+
+        if (!token) {
+            this.router.navigate(['/auth/login']);
+            return;
+        }
+
+        const claims = this.tokenService.getClaim();
+
+        if (claims.Roles && claims.Roles.includes('ROLE_SYSTEM_ADMIN')) {
+            this.router.navigate(['/system']);
+            return;
+        }
+
+        if (claims.Roles && claims.Roles.includes('ROLE_ADMIN')) {
+            this.router.navigate(['/']);
+            return;
+        }
+    }
+}
