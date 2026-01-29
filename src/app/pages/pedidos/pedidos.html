@@ -10,8 +10,8 @@
 <p-table #dt [value]="pedidos()" [rows]="10" stripedRows [globalFilterFields]="['codigo']"
     [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id" [rowsPerPageOptions]="[10, 25, 50]"
     [loading]="loading()">
-    <ng-template #caption>
-        <div class="flex">
+    <ng-template pTemplate="caption">
+        <div class="flex" [formGroup]="form">
             <p-button label="Reload" [outlined]="true" (click)="loadPedidos()" icon="pi  pi-spinner" />
             <p-iconfield iconPosition="left" class="ml-auto">
                 <p-inputicon>
@@ -51,11 +51,11 @@
                 <p-sortIcon field="total" />
             </th>
             <th pSortableColumn="dataInit" style="min-width:12rem">
-                Data/Hora Início
+                DT Início
                 <p-sortIcon field="dataInit" />
             </th>
-            <th pSortableColumn="dataFim" style="min-width:12rem">
-                Data/Hora conclusão
+            <th pSortableColumn="dataFim" style="min-width:12rem">  
+                DT conclusão
                 <p-sortIcon field="dataFim" />
             </th>
             <th pSortableColumn="status" style="min-width: 12rem">
