@@ -1,5 +1,5 @@
 
-import { Component, DebugNode, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -30,12 +30,14 @@ import { TokenService } from '@/service/token.service';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { ParamsRequest } from '@/shared/utils/pageable.utils';
 import { LoadingService } from '@/shared/services/loading.service';
-import { GarcomDeleteDialog } from "./dialog/garcom-delete-dialog";
+
 import { debounceTime } from 'rxjs';
+import { FuncionariosDeleteDialog } from './dialog/funcionarios-delete-dialog';
+import { RoleModel, RoleService } from '@/service/role.service';
 
 
 @Component({
-    selector: 'app-garcom',
+    selector: 'app-funcionario',
     standalone: true,
     imports: [
     CommonModule,
@@ -61,24 +63,27 @@ import { debounceTime } from 'rxjs';
     Panel,
     Avatar,
     Paginator,
-    GarcomDeleteDialog
+    FuncionariosDeleteDialog
 ],
     providers: [MessageService, ProductService, ConfirmationService],
-    templateUrl: './garcom.html',
-    styleUrl: './garcom.scss'
+    templateUrl: './funcionarios.html',
+    styleUrl: './funcionarios.scss'
 })
-export class Garcom implements OnInit {
+export class Funcionarios implements OnInit {
     loadingService = inject(LoadingService);
     tokenService = inject(TokenService);
+    roleService = inject(RoleService);
+    roles = signal<RoleModel[]>([]);
+
     garcomDialog: boolean = false;
-    garcomDelete: boolean = false;
-    garcomEdit: boolean = false;
-    garcomDeleteId: number = 0;
+    funcionariosDeleteDelete: boolean = false;
+    funcionariosEdit: boolean = false;
+    funcionariosDeleteId: number = 0;
 
     products = signal<Product[]>([]);
-    garcons = signal<FuncionarioModel[]>([]);
+    funcionarios = signal<FuncionarioModel[]>([]);
 
-    garcom!: FuncionarioModel;
+    funcionario!: FuncionarioModel;
 
     form!: FormGroup;
     formSearch!: FormGroup;
@@ -104,6 +109,11 @@ export class Garcom implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.roleService.findAll().subscribe({
+            next: (data) => {
+                this.roles.set(data);
+            }
+        });
         this.createSearchForm();
         this.createForm();
         this.formSearch
@@ -121,7 +131,9 @@ export class Garcom implements OnInit {
             id: [null],
             nome: [null, [Validators.required]],
             cpf: [null, [Validators.required, CpfValidator.validate]],
-            status: [true]
+            status: [true],
+            telefone: [null, [Validators.required]],
+            role: [null, [Validators.required]]
         });
     }
      createSearchForm() {
@@ -140,7 +152,7 @@ export class Garcom implements OnInit {
         const claim = this.tokenService.getClaim();
         this.funcionarioService.findAllPageable(param, claim.quiosque_id).subscribe({
             next: (data) => {
-                this.garcons.set(data.content);
+                this.funcionarios.set(data.content);
                 this.totalRecords = data.totalElements;
                 this.loadingService.hide();
             },
@@ -161,20 +173,20 @@ export class Garcom implements OnInit {
     }
 
     openNew() {
-        this.garcom = {};
+        this.funcionario = {};
         this.submitted = false;
         this.garcomDialog = true;
     }
 
-    editGarcom(garcom: FuncionarioModel) {
-        this.form.patchValue(garcom);
-        this.garcomEdit = true;
+    editFuncionarios(funcionario: FuncionarioModel) {
+        this.form.patchValue(funcionario);
+        this.funcionariosEdit = true;
     }
 
 
-    deleteSelectedGarcons(garcomId: number) {
-        this.garcomDeleteId = garcomId;
-        this.garcomDelete = true;
+    deleteSelectedFuncionarios(funcionarioId: number) {
+        this.funcionariosDeleteId = funcionarioId;
+        this.funcionariosDeleteDelete = true;
     }
 
     hideDialog() {
@@ -183,22 +195,22 @@ export class Garcom implements OnInit {
     }
 
     hideEditDialog() {
-        this.garcomEdit = false;
+        this.funcionariosEdit = false;  
         this.submitted = false;
     }
 
-    deleteGarcom(garcom: any) {
+    deleteFuncionarios(funcionario: any) {
         
         this.confirmationService.confirm({
-            message: 'Tem certeza que deseja excluir o garçom? <br>Todas as mesas serão desassociadas e adicionadas ao garçom selecionado!',
+            message: 'Tem certeza que deseja excluir o funcionário? <br>Todas as mesas serão desassociadas e adicionadas ao funcionário selecionado!',
             header: 'Confirmar Exclusão',
             acceptLabel: 'Sim',
             rejectLabel: 'Não',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.loadingService.show();
-                this.garcomDelete = false
-                this.funcionarioService.delete(garcom, this.garcomDeleteId).subscribe({
+                this.funcionariosDeleteDelete = false
+                this.funcionarioService.delete(funcionario, this.funcionariosDeleteId).subscribe({
                     next: () => {
                         this.loadingService.hide();
                         
@@ -224,9 +236,9 @@ export class Garcom implements OnInit {
         });
     }
 
-    activateGarcom(garcom: FuncionarioModel) {
+    activateFuncionarios(garcom: FuncionarioModel) {
         this.confirmationService.confirm({
-            message: 'Tem certeza que deseja ativar o garçom?',
+            message: 'Tem certeza que deseja ativar o funcionário?',
             header: 'Confirmar Ativação',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
@@ -239,7 +251,7 @@ export class Garcom implements OnInit {
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Successful',
-                            detail: 'Garcom ativado com sucesso',
+                            detail: 'Funcionário ativado com sucesso',
                             life: 3000
                         });
                     },
@@ -268,18 +280,20 @@ export class Garcom implements OnInit {
             return;
         }
 
-        this.garcom = {
-            ...this.form.value
+        this.funcionario = {
+            ...this.form.value,
+            role: this.form.value.role.id
         };
+        debugger
         const claim = this.tokenService.getClaim();
         this.loadingService.show();
-        this.funcionarioService.create(this.garcom, claim.quiosque_id).subscribe({
+        this.funcionarioService.create(this.funcionario, claim.quiosque_id).subscribe({
             next: () => {
                 this.loadingService.hide();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Garcom salvo com sucesso',
+                    detail: 'Funcionário salvo com sucesso',
                     life: 3000
                 });
                 
@@ -301,27 +315,27 @@ export class Garcom implements OnInit {
         
     }
 
-    editarGarcom(garcom: FuncionarioModel) {
-        this.garcomEdit = false;
+    editarFuncionarios(garcom: FuncionarioModel) {
+        this.funcionariosEdit = false;
         this.submitted = true;
 
         if (this.form.invalid) {
             return;
         }
 
-        this.garcom = {
+        this.funcionario = {
             ...this.form.value,
             ...garcom
         };
 
         this.loadingService.show();
-        this.funcionarioService.update(this.garcom).subscribe({
+        this.funcionarioService.update(this.funcionario).subscribe({
             next: () => {
                 this.loadingService.hide();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Garcom editado com sucesso',
+                    detail: 'Funcionário editado com sucesso',
                     life: 3000
                 });
                 

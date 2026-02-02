@@ -8,18 +8,18 @@ import { TokenService } from "@/service/token.service";
 import { SelectModule } from "primeng/select";
 
 @Component({
-    selector: 'app-garcom-delete-dialog',
+    selector: 'app-funcionarios-delete-dialog',
     standalone: true,
     imports: [Dialog, Button, ReactiveFormsModule, CommonModule, SelectModule],
     providers: [FuncionarioService],
     template: `
-<p-dialog [visible]="garcomDelete" (visibleChange)="onVisibilityChange($event)" [style]="{ width: '450px' }" header="Deletar Garçom" [modal]="true">
+<p-dialog [visible]="funcionarioDelete" (visibleChange)="onVisibilityChange($event)" [style]="{ width: '450px' }" header="Deletar Funcionário" [modal]="true">
     <ng-template #content>
         <form [formGroup]="form">
              <div class="flex flex-col gap-6">
                     <div>
-                        <label for="state" class="block font-bold mb-3">Selecione um novo garçom para vincular a mesa!</label>
-                        <p-select id="state" formControlName="garcomDestino" [options]="dropdownItems" optionLabel="name" placeholder="Selecione um garçom" styleClass="w-full" appendTo="body" />
+                        <label for="state" class="block font-bold mb-3">Selecione um novo funcionário para vincular a mesa!</label>
+                        <p-select id="state" formControlName="funcionarioDestino" [options]="dropdownItems" optionLabel="name" placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
                     </div>
             </div>
         </form>
@@ -27,19 +27,19 @@ import { SelectModule } from "primeng/select";
 
     <ng-template #footer>
         <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button label="Delete" icon="pi pi-trash" (click)="deleteGarcom()" [disabled]="form.invalid" />
+        <p-button label="Delete" icon="pi pi-trash" (click)="funcionariosDelete()" [disabled]="form.invalid" />
     </ng-template>
 </p-dialog>
     `
 })
-export class GarcomDeleteDialog implements OnChanges {
+export class FuncionariosDeleteDialog implements OnChanges {
     dropdownItems = [];
     tokenService = inject(TokenService);
     form!: FormGroup;
-    @Input() garcomDelete: boolean = false;
-    @Input() garcomDeleteId!: number;
-    @Output() garcomDeleteChange = new EventEmitter<any>();
-     @Output() garcomDeleteEvent = new EventEmitter<any>();
+    @Input() funcionarioDelete: boolean = false;
+    @Input() funcionarioDeleteId!: number;
+    @Output() funcionarioDeleteChange = new EventEmitter<any>();
+     @Output() funcionarioDeleteEvent = new EventEmitter<any>();
 
     garcons: any[] = [];
 
@@ -58,34 +58,34 @@ export class GarcomDeleteDialog implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         
-        if (changes['garcomDelete'] && changes['garcomDelete'].currentValue === true) {
+        if (changes['funcionarioDelete'] && changes['funcionarioDelete'].currentValue === true) {
             const quiosqueId = this.tokenService.getClaim();
-            this.funcionarioService.findAllNOtEqualsId(this.garcomDeleteId, quiosqueId.quiosque_id).subscribe({
+                this.funcionarioService.findAllNOtEqualsId(this.funcionarioDeleteId, quiosqueId.quiosque_id).subscribe({
                 next: (response) => {
                     
                     this.dropdownItems = response;
-                    this.garcomDelete = true;
+                    this.funcionarioDelete = true;
                 },
                 error: (error) => {
-                    console.error('Erro ao buscar garçons:', error);
+                    console.error('Erro ao buscar funcionários:', error);
                 }
             });
         }
     }
 
     onVisibilityChange(value: boolean) {
-        this.garcomDelete = value;
-        this.garcomDeleteChange.emit(value);
+        this.funcionarioDelete = value;
+        this.funcionarioDeleteChange.emit(value);
     }
 
     hideDialog() {
-        this.garcomDelete = false;
-        this.garcomDeleteChange.emit(this.garcomDelete);
+        this.funcionarioDelete = false;
+        this.funcionarioDeleteChange.emit(this.funcionarioDelete);
     }
 
-    deleteGarcom() {
+    funcionariosDelete() {
         if (this.form.valid) {
-           this.garcomDeleteEvent.emit(this.form.value.garcomDestino.code);  
+           this.funcionarioDeleteEvent.emit(this.form.value.garcomDestino.code);  
         }
     }
 }

@@ -68,7 +68,7 @@
                     <div>
                         <label for="description" class="block font-bold mb-3">Garcom</label>
                         <p-select id="state" formControlName="garcom" [options]="dropdownItems"
-                            optionLabel="name" placeholder="Selecione um garçom" styleClass="w-full" appendTo="body" />
+                            optionLabel="nome" placeholder="Selecione um garçom" styleClass="w-full" appendTo="body" />
                         <small class="text-red-500"
                             *ngIf="form.get('garcom')?.hasError('required') && (form.get('garcom')?.dirty || form.get('garcom')?.touched)">Garcom
                             é requerido.</small>

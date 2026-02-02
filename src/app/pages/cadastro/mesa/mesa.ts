@@ -22,7 +22,7 @@ import { MesaModel } from '@/model/mesa.model';
 import { MesaService } from '@/service/mesa.service';
 import { TokenService } from '@/service/token.service';
 import { Select } from "primeng/select";
-import { GarcomService } from '@/service/garcom.service';
+import { FuncionarioService } from '@/service/funcionario.service';
 
 
 @Component({
@@ -55,7 +55,7 @@ export class Mesa implements OnInit {
     loadingService = inject(LoadingService);
     tokenService = inject(TokenService);
     mesaService = inject(MesaService);
-    garcomService = inject(GarcomService);
+    funcionarioService = inject(FuncionarioService);
 
     mesaDialog: boolean = false;
     dropdownItems = [];
@@ -91,7 +91,7 @@ export class Mesa implements OnInit {
     }
 
     loadGarcom() {
-        this.garcomService.findAllWithStatusTrue(this.tokenService.getClaim().quiosque_id).subscribe({
+        this.funcionarioService.findAllWithStatusTrue(this.tokenService.getClaim().quiosque_id).subscribe({
             next: (data) => {
                 this.dropdownItems = data;
             },

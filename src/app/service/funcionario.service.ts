@@ -1,4 +1,4 @@
-import { GarcomModel } from "@/model/garcom.model";
+import { FuncionarioModel } from "@/model/garcom.model";
 import { ApiPageableResponse, ParamsRequest } from "@/shared/utils/pageable.utils";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import {  Injectable } from "@angular/core";
@@ -10,16 +10,16 @@ import { environment } from "src/environments/environment";
 @Injectable({
     providedIn: 'root'
 })
-export class GarcomService {
+export class FuncionarioService {
    
-    urlGarcomBase = '/api/v1/admin/garcom';
+    urlGarcomBase = '/api/v1/admin/funcionario';
     constructor(private _http: HttpClient) { }
 
-    create(garcom: GarcomModel, quiosqueId: string): Observable<any> {
+    create(garcom: FuncionarioModel, quiosqueId: string): Observable<any> {
         return this._http.post<any>(`${environment.apiUrl}${this.urlGarcomBase}/${quiosqueId}`, garcom);
     }
 
-    findAllPageable(params?: ParamsRequest, quiosqueId?: string): Observable<ApiPageableResponse<GarcomModel>> {
+    findAllPageable(params?: ParamsRequest, quiosqueId?: string): Observable<ApiPageableResponse<FuncionarioModel>> {
         const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', search = undefined } = params || {};
 
         let queryParams = new HttpParams()
@@ -32,7 +32,7 @@ export class GarcomService {
             queryParams = queryParams.set('search', search);
         }
 
-        return this._http.get<ApiPageableResponse<GarcomModel>>(`${environment.apiUrl}${this.urlGarcomBase}/${quiosqueId}/pageable`, { params: queryParams });
+        return this._http.get<ApiPageableResponse<FuncionarioModel>>(`${environment.apiUrl}${this.urlGarcomBase}/${quiosqueId}/pageable`, { params: queryParams });
     }
 
      findAllNOtEqualsId(garcomId: any, quiosqueId: string): Observable<any> {
@@ -51,7 +51,7 @@ export class GarcomService {
         return this._http.put<any>(`${environment.apiUrl}${this.urlGarcomBase}/activate`, {id: garcomId});
     }
         
-    update(garcom: GarcomModel): Observable<any> {
+    update(garcom: FuncionarioModel): Observable<any> {
         return this._http.put<any>(`${environment.apiUrl}${this.urlGarcomBase}/update`, garcom);
     }
 }

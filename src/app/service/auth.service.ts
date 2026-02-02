@@ -7,10 +7,12 @@ import { environment } from "src/environments/environment";
     providedIn: 'root'
 })
 export class AuthService {
+     urlBase = '/api/v1/auth';
+     urlAdminBase = '/api/v1/admin/auth';
     constructor(private _http: HttpClient) { }
 
      logar(username: string, password: string): Observable<any> {
-      return this._http.post(`${environment.apiUrl}/api/v1/auth`,{
+        return this._http.post(`${environment.apiUrl}${this.urlBase}`,{
             email:username,
             password:password
         })
