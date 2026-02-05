@@ -43,7 +43,6 @@ export class AppMenu {
                         items: [
                             {
                                 label: 'Cadastro', items: [
-                                    { label: 'Garçom', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/garcom'] },
                                     { label: 'Funcionário', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/funcionario'] },
                                     { label: 'Mesa', icon: 'pi pi-fw pi-user', routerLink: ['/cadastro/mesa'] },
                                     { label: 'Produto', icon: 'pi pi-fw pi-box', routerLink: ['/cadastro/produto'] },
