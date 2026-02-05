@@ -17,4 +17,11 @@ export class AuthService {
             password:password
         })
     }
+
+     logarFunc(cpf: string, password: string): Observable<any> {
+        return this._http.post(`${environment.apiUrl}${this.urlBase}/funcionario`,{
+            login:cpf,
+            password:password
+        })
+    }
 }

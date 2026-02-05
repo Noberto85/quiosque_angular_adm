@@ -1,0 +1,29 @@
+<form [formGroup]="loginFuncForm" (ngSubmit)="onSubmit()">
+    <label for="cpf1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">CPF</label>
+    <input mask="000.000.000-00"  pInputText id="cpf1" type="text" placeholder="CPF" class="w-full md:w-120 mb-2"
+        formControlName="cpf" />
+    <div *ngIf="loginFuncForm.get('cpf')?.invalid && (loginFuncForm.get('cpf')?.dirty || loginFuncForm.get('cpf')?.touched)"
+        class="text-red-500 mb-6">
+        <small *ngIf="loginFuncForm.get('cpf')?.errors?.['required']">O CPF é obrigatório.</small>
+        <small *ngIf="loginFuncForm.get('cpf')?.errors?.['pattern']">Digite um CPF válido.</small>
+    </div>
+
+    <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Senha</label>
+    <p-password [maxLength]="8"  id="password1" formControlName="password" placeholder="Senha"  [toggleMask]="true" styleClass="mb-2"
+        [fluid]="true" [feedback]="false"></p-password>
+    <div *ngIf="loginFuncForm.get('password')?.invalid && (loginFuncForm.get('password')?.dirty || loginFuncForm.get('password')?.touched)"
+        class="text-red-500 mb-6">
+        <small *ngIf="loginFuncForm.get('password')?.errors?.['required']">A senha é obrigatória.</small>
+        <small *ngIf="loginFuncForm.get('password')?.errors?.['minlength']">A senha deve ter pelo menos 6
+            caracteres.</small>
+    </div>
+
+    <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+        <div class="flex items-center">
+            <p-checkbox formControlName="rememberMe" id="rememberme1" binary class="mr-2"></p-checkbox>
+            <label for="rememberme1">Lembrar-me</label>
+        </div>
+        <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Esqueceu a senha?</span>
+    </div>
+    <p-button label="Entrar" styleClass="w-full" type="submit" [disabled]="loginFuncForm.invalid"></p-button>
+</form>

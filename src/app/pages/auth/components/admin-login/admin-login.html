@@ -1,0 +1,29 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">E-mail</label>
+    <input pInputText id="email1" type="text" placeholder="Endereço de e-mail" class="w-full md:w-120 mb-2"
+        formControlName="email" />
+    <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)"
+        class="text-red-500 mb-6">
+        <small *ngIf="loginForm.get('email')?.errors?.['required']">O e-mail é obrigatório.</small>
+        <small *ngIf="loginForm.get('email')?.errors?.['email']">Digite um e-mail válido.</small>
+    </div>
+
+    <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Senha</label>
+    <p-password id="password1"  [maxLength]="8" formControlName="password" placeholder="Senha" [toggleMask]="true" styleClass="mb-2"
+        [fluid]="true" [feedback]="false"></p-password>
+    <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)"
+        class="text-red-500 mb-6">
+        <small *ngIf="loginForm.get('password')?.errors?.['required']">A senha é obrigatória.</small>
+        <small *ngIf="loginForm.get('password')?.errors?.['minlength']">A senha deve ter pelo menos 6
+            caracteres.</small>
+    </div>
+
+    <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+        <div class="flex items-center">
+            <p-checkbox formControlName="rememberMe" id="rememberme1" binary class="mr-2"></p-checkbox>
+            <label for="rememberme1">Lembrar-me</label>
+        </div>
+        <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Esqueceu a senha?</span>
+    </div>
+    <p-button label="Entrar" styleClass="w-full" type="submit" [disabled]="loginForm.invalid"></p-button>
+</form>
