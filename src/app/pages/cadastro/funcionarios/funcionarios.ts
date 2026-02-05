@@ -76,9 +76,9 @@ export class Funcionarios implements OnInit {
     roles = signal<RoleModel[]>([]);
 
     garcomDialog: boolean = false;
-    funcionariosDeleteDelete: boolean = false;
+    funcionarioDelete: boolean = false;
     funcionariosEdit: boolean = false;
-    funcionariosDeleteId: number = 0;
+    funcionarioDeleteId: string = '';
 
     products = signal<Product[]>([]);
     funcionarios = signal<FuncionarioModel[]>([]);
@@ -150,7 +150,7 @@ export class Funcionarios implements OnInit {
         
         this.loadingService.show();
         const claim = this.tokenService.getClaim();
-        this.funcionarioService.findAllPageable(param, claim.quiosque_id).subscribe({
+        this.funcionarioService.findAllPageable(param, claim.quiosque_id, claim.user_adm_id).subscribe({
             next: (data) => {
                 this.funcionarios.set(data.content);
                 this.totalRecords = data.totalElements;
@@ -184,9 +184,46 @@ export class Funcionarios implements OnInit {
     }
 
 
-    deleteSelectedFuncionarios(funcionarioId: number) {
-        this.funcionariosDeleteId = funcionarioId;
-        this.funcionariosDeleteDelete = true;
+    deleteSelectedFuncionarios(funcionario: any) {
+        debugger
+        if(funcionario.role === 'ADMINISTRADOR' || funcionario.role === 'COZINHA'){
+            this.confirmationService.confirm({
+            message: 'Tem certeza que deseja excluir o funcionário?',
+            header: 'Confirmar Exclusão',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                
+                this.loadingService.show();
+                this.funcionarioService.deleteFunc(funcionario.id).subscribe({
+                    next: () => {
+                        this.loadingService.hide();
+                        
+                        this.loadData();
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Successful',
+                            detail: 'Funcionário excluído com sucesso',
+                            life: 3000
+                        });
+                    },
+                    error: (error) => {
+                        this.loadingService.hide();
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: error.error.message,
+                            life: 3000
+                        });
+                    }
+                });
+            }
+        });
+            return;
+        }
+        this.funcionarioDeleteId = funcionario.id;
+        this.funcionarioDelete = true;
     }
 
     hideDialog() {
@@ -208,9 +245,10 @@ export class Funcionarios implements OnInit {
             rejectLabel: 'Não',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
+                debugger
                 this.loadingService.show();
-                this.funcionariosDeleteDelete = false
-                this.funcionarioService.delete(funcionario, this.funcionariosDeleteId).subscribe({
+                this.funcionarioDelete = false
+                this.funcionarioService.delete(funcionario, this.funcionarioDeleteId).subscribe({
                     next: () => {
                         this.loadingService.hide();
                         

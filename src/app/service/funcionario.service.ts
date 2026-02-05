@@ -19,8 +19,8 @@ export class FuncionarioService {
         return this._http.post<any>(`${environment.apiUrl}${this.urlGarcomBase}/${quiosqueId}`, garcom);
     }
 
-    findAllPageable(params?: ParamsRequest, quiosqueId?: string): Observable<ApiPageableResponse<FuncionarioModel>> {
-        const { page = 0, size = 10, orderBy = 'id', direction = 'DESC', search = undefined } = params || {};
+    findAllPageable(params?: ParamsRequest, quiosqueId?: string, userAdmId?: string): Observable<ApiPageableResponse<FuncionarioModel>> {
+        const { page = 0, size = 10, orderBy = 'nome', direction = 'ASC', search = undefined } = params || {};
 
         let queryParams = new HttpParams()
             .set('page', page)
@@ -32,7 +32,7 @@ export class FuncionarioService {
             queryParams = queryParams.set('search', search);
         }
 
-        return this._http.get<ApiPageableResponse<FuncionarioModel>>(`${environment.apiUrl}${this.urlGarcomBase}/${quiosqueId}/pageable`, { params: queryParams });
+        return this._http.get<ApiPageableResponse<FuncionarioModel>>(`${environment.apiUrl}${this.urlGarcomBase}/${userAdmId}/${quiosqueId}/pageable`, { params: queryParams });
     }
 
      findAllNOtEqualsId(garcomId: any, quiosqueId: string): Observable<any> {
@@ -45,6 +45,10 @@ export class FuncionarioService {
 
      delete(novoGarcomId: any, garcomId: any): Observable<any> {
         return this._http.delete<any>(`${environment.apiUrl}${this.urlGarcomBase}/${novoGarcomId}/${garcomId}`);
+    }
+
+    deleteFunc(garcomId: any): Observable<any> {
+        return this._http.delete<any>(`${environment.apiUrl}${this.urlGarcomBase}/${garcomId}`);
     }
         
     activate(garcomId: any): Observable<any> {

@@ -9,6 +9,7 @@ export interface DecodeToken {
     Roles: string[];
     quiosque_id: string;
     user_name: string;
+    user_adm_id: string;
 }
 
 @Injectable({

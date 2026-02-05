@@ -19,7 +19,7 @@ import { SelectModule } from "primeng/select";
              <div class="flex flex-col gap-6">
                     <div>
                         <label for="state" class="block font-bold mb-3">Selecione um novo funcionário para vincular a mesa!</label>
-                        <p-select id="state" formControlName="funcionarioDestino" [options]="dropdownItems" optionLabel="name" placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
+                        <p-select id="state" formControlName="funcionarioDestino" [options]="dropdownItems" optionLabel="nome" placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
                     </div>
             </div>
         </form>
@@ -37,9 +37,9 @@ export class FuncionariosDeleteDialog implements OnChanges {
     tokenService = inject(TokenService);
     form!: FormGroup;
     @Input() funcionarioDelete: boolean = false;
-    @Input() funcionarioDeleteId!: number;
+    @Input() funcionarioDeleteId!: string;
     @Output() funcionarioDeleteChange = new EventEmitter<any>();
-     @Output() funcionarioDeleteEvent = new EventEmitter<any>();
+    @Output() funcionarioDeleteEvent = new EventEmitter<any>();
 
     garcons: any[] = [];
 
@@ -52,17 +52,17 @@ export class FuncionariosDeleteDialog implements OnChanges {
 
     createForm() {
         this.form = this.formBuilder.group({
-            garcomDestino: [null, [Validators.required]]
+            funcionarioDestino: [null, [Validators.required]]
         });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        
+            debugger
         if (changes['funcionarioDelete'] && changes['funcionarioDelete'].currentValue === true) {
             const quiosqueId = this.tokenService.getClaim();
-                this.funcionarioService.findAllNOtEqualsId(this.funcionarioDeleteId, quiosqueId.quiosque_id).subscribe({
+            this.funcionarioService.findAllNOtEqualsId(this.funcionarioDeleteId, quiosqueId.quiosque_id).subscribe({
                 next: (response) => {
-                    
+
                     this.dropdownItems = response;
                     this.funcionarioDelete = true;
                 },
@@ -85,7 +85,7 @@ export class FuncionariosDeleteDialog implements OnChanges {
 
     funcionariosDelete() {
         if (this.form.valid) {
-           this.funcionarioDeleteEvent.emit(this.form.value.garcomDestino.code);  
+            this.funcionarioDeleteEvent.emit(this.form.value.funcionarioDestino.id);
         }
     }
 }

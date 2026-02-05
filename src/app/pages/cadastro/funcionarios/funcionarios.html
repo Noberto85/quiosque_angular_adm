@@ -14,23 +14,20 @@
     </ng-template>
 </p-toolbar>
 
-<p-table #dt [value]="funcionarios()" [rows]="10"  stripedRows 
-    [globalFilterFields]="['nome', 'cpf']"
-    [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id"
-  
-    [rowsPerPageOptions]="[10]">
+<p-table #dt [value]="funcionarios()" [rows]="10" stripedRows [globalFilterFields]="['nome', 'cpf']"
+    [tableStyle]="{ 'min-width': '75rem' }" [rowHover]="true" dataKey="id" [rowsPerPageOptions]="[10]">
     <ng-template #caption>
         <form [formGroup]="formSearch">
-                    <div class="flex justify-between items-center flex-column sm:flex-row">
-                            <p-iconfield iconPosition="left" class="ml-auto">
-                                <p-inputicon>
-                                    <i class="pi pi-search"></i>
-                                </p-inputicon>
-                                <input pInputText type="text" formControlName="search" placeholder="Procure por nome ou cpf" />
-                                  <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
-                            </p-iconfield>
-                     </div>
-                </form>
+            <div class="flex justify-between items-center flex-column sm:flex-row">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input pInputText type="text" formControlName="search" placeholder="Procure por nome ou cpf" />
+                    <p-inputicon *ngIf="form.get('search')?.value" class="pi pi-times" (click)="clearSearch()" />
+                </p-iconfield>
+            </div>
+        </form>
     </ng-template>
     <ng-template #header>
         <tr>
@@ -38,9 +35,13 @@
                 Nome
                 <p-sortIcon field="nome" />
             </th>
-  
+
             <th pSortableColumn="cpf" style="min-width:10rem">
                 Cpf
+                <p-sortIcon field="cpf" />
+            </th>
+            <th pSortableColumn="cpf" style="min-width:10rem">
+                Cargo
                 <p-sortIcon field="cpf" />
             </th>
             <th pSortableColumn="status" style="min-width: 12rem">
@@ -54,28 +55,27 @@
         <tr>
             <td style="min-width: 16rem">{{ garcom.nome | uppercase }}</td>
             <td style="min-width: 10rem">{{ garcom.cpf }}</td>
+            <td style="min-width: 10rem">{{ garcom.role }}</td>
             <td>
-                <p-tag [value]="getStatusName(garcom.status)" [severity]="getSeverity(garcom.status)" />   
+                <p-tag [value]="getStatusName(garcom.status)" [severity]="getSeverity(garcom.status)" />
             </td>
             <td>
                 <p-button *ngIf="garcom.status" icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
                     (click)="editFuncionarios(garcom)" />
-                <p-button *ngIf="!garcom.status" icon="pi pi-check" severity="success" [rounded]="true" [outlined]="true"
-                    (click)="activateFuncionarios(garcom)" />
+                <p-button *ngIf="!garcom.status" icon="pi pi-check" severity="success" [rounded]="true"
+                    [outlined]="true" (click)="activateFuncionarios(garcom)" />
                 <p-button *ngIf="garcom.status" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                    (click)="deleteFuncionarios(garcom.id)" />
+                    (click)="deleteSelectedFuncionarios(garcom)" />
             </td>
         </tr>
     </ng-template>
-     <ng-template #footer *ngIf="funcionarios().length === 0">
+    <ng-template #footer *ngIf="funcionarios().length === 0">
         <tr>
             <td colspan="4" class="text-center">Nenhum funcionário encontrado.</td>
         </tr>
     </ng-template>
 </p-table>
- <p-paginator (onPageChange)="onPageChange($event)" 
-            [first]="first" [rows]="rows" 
-            [totalRecords]="totalRecords"  />
+<p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords" />
 
 <p-dialog [(visible)]="garcomDialog" [style]="{ width: '450px' }" header="Novo Funcionario" [modal]="true">
     <ng-template #content>
@@ -83,29 +83,43 @@
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-3">Nome</label>
-                    <input maxlength="255" type="text" pInputText id="name" formControlName="nome" required autofocus fluid placeholder="Digite o nome" />
-                    <small class="text-red-500" *ngIf="form.get('nome')?.invalid && (form.get('nome')?.dirty || form.get('nome')?.touched)">Nome é requerido.</small>
+                    <input maxlength="255" type="text" pInputText id="name" formControlName="nome" required autofocus
+                        fluid placeholder="Digite o nome" />
+                    <small class="text-red-500"
+                        *ngIf="form.get('nome')?.invalid && (form.get('nome')?.dirty || form.get('nome')?.touched)">Nome
+                        é requerido.</small>
                 </div>
                 <div>
                     <label for="description" class="block font-bold mb-3">Cpf</label>
-                    <input type="text" pInputText id="description" formControlName="cpf" required autofocus
-                        fluid mask="000.000.000-00" placeholder="Digite o cpf" />
-                    <small class="text-red-500" *ngIf="form.get('cpf')?.hasError('required') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf é requerido.</small>
-                    <small class="text-red-500" *ngIf="form.get('cpf')?.hasError('invalidCpf') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf inválido.</small>
+                    <input type="text" pInputText id="description" formControlName="cpf" required autofocus fluid
+                        mask="000.000.000-00" placeholder="Digite o cpf" />
+                    <small class="text-red-500"
+                        *ngIf="form.get('cpf')?.hasError('required') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf
+                        é requerido.</small>
+                    <small class="text-red-500"
+                        *ngIf="form.get('cpf')?.hasError('invalidCpf') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf
+                        inválido.</small>
                 </div>
                 <div>
-                    <label for="description" class="block font-bold mb-3">Telefone</label>
-                    <input type="text" pInputText id="description" formControlName="telefone" required autofocus
+                    <label for="description" class="block font-bold mb-3">Tefefone</label>
+                    <input type="text" pInputText id="description" formControlName="telefone" required autofocus fluid
                         mask="(00) 00000-0000" placeholder="Digite o telefone" />
-                    <small class="text-red-500" *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.dirty || form.get('telefone')?.touched)">Telefone é requerido.</small>
-                </div>  
+                    <small class="text-red-500"
+                        *ngIf="form.get('telefone')?.hasError('required') && (form.get('telefone')?.dirty || form.get('telefone')?.touched)">telefone
+                        é requerido.</small>
+                    <small class="text-red-500"
+                        *ngIf="form.get('telefone')?.hasError('invalidTelefone') && (form.get('telefone')?.dirty || form.get('telefone')?.touched)">telefone
+                        inválido.</small>
+                </div>
                 <div class="flex flex-col gap-6">
                     <div>
-                        <label for="state" class="block font-bold mb-3">Selecione um novo funcionário para vincular a mesa!</label>
-                        <p-select id="state" formControlName="role" [options]="roles()" optionLabel="role" placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
-                        <small class="text-red-500" *ngIf="form.get('role')?.invalid && (form.get('role')?.dirty || form.get('role')?.touched)">Funcionário é requerido.</small>
+                        <p-select id="state" formControlName="role" [options]="roles()" optionLabel="role"
+                            placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
+                        <small class="text-red-500"
+                            *ngIf="form.get('role')?.invalid && (form.get('role')?.dirty || form.get('role')?.touched)">Funcionário
+                            é requerido.</small>
                     </div>
-            </div>
+                </div>
             </div>
         </form>
     </ng-template>
@@ -122,8 +136,11 @@
             <div class="flex flex-col gap-6">
                 <div>
                     <label for="name" class="block font-bold mb-3">Nome</label>
-                    <input maxlength="255" type="text" pInputText id="name" formControlName="nome" required autofocus fluid placeholder="Digite o nome" />
-                    <small class="text-red-500" *ngIf="form.get('nome')?.invalid && (form.get('nome')?.dirty || form.get('nome')?.touched)">Nome é requerido.</small>
+                    <input maxlength="255" type="text" pInputText id="name" formControlName="nome" required autofocus
+                        fluid placeholder="Digite o nome" />
+                    <small class="text-red-500"
+                        *ngIf="form.get('nome')?.invalid && (form.get('nome')?.dirty || form.get('nome')?.touched)">Nome
+                        é requerido.</small>
                 </div>
             </div>
         </form>
@@ -131,10 +148,13 @@
 
     <ng-template #footer>
         <p-button label="Cancel" icon="pi pi-times" text (click)="hideEditDialog()" />
-        <p-button label="Editar" icon="pi pi-check" (click)="editarFuncionarios(funcionario)" [disabled]="form.invalid" />
+        <p-button label="Editar" icon="pi pi-check" (click)="editarFuncionarios(funcionario)"
+            [disabled]="form.invalid" />
     </ng-template>
 </p-dialog>
 
-<app-funcionarios-delete-dialog 
-(funcionariosDeleteEvent)="deleteFuncionarios($event)" />
+<app-funcionarios-delete-dialog
+[(funcionarioDelete)]="funcionarioDelete"
+[funcionarioDeleteId]="funcionarioDeleteId"
+(funcionarioDeleteEvent)="deleteFuncionarios($event)" />
 <p-confirmdialog [style]="{ width: '450px' }" />

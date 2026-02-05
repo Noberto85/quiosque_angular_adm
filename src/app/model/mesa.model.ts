@@ -1,6 +1,6 @@
 export interface MesaModel {
     id?: string;
     numero?: number;
-    garcomId?: number;
+    garcomId?: string;
     status?: boolean;
 }

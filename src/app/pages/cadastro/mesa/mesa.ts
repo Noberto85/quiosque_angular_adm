@@ -165,7 +165,7 @@ export class Mesa implements OnInit {
             const mesaToUpdate: MesaModel = {
                 id: this.mesa.id,
                 numero: Number(this.form.value.numero),
-                garcomId: Number(this.form.value.garcom.code)
+                garcomId: this.form.value.garcom.id
             };
 
             this.mesaService.update(mesaToUpdate).subscribe({
@@ -208,13 +208,14 @@ export class Mesa implements OnInit {
     }
 
     saveMesa() {
+        debugger
         this.submitted = true;
 
         if (this.form.valid) {
             const claim = this.tokenService.getClaim();
             const mesaToSave: MesaModel = {
                 numero: Number(this.form.value.numero),
-                garcomId: Number(this.form.value.garcom.code)
+                garcomId: this.form.value.garcom.id
             };
 
             this.mesaService.create(mesaToSave, claim.quiosque_id).subscribe({
