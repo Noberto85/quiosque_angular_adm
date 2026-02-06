@@ -127,6 +127,8 @@ export class Login {
         if (claims) {
             if (claims.Roles.includes("ROLE_SYSTEM_ADMIN")) {
                 this.router.navigate(['/system']);
+            } else if (claims.Roles.includes("ROLE_GARCOM")) {
+                this.router.navigate(['/garcom']);
             } else {
                 this.router.navigate(['/']);
             }

@@ -7,6 +7,8 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { adminGuard } from '@/guards/admin.guard';
 import { systemGuard } from '@/guards/system.guard';
 import { DashboardAdm } from '@/pages/system/dasboard-system/dashboard';
+import { DashboardGarcom } from '@/pages/garcom/dashboard-garcom';
+import { garcomGuard } from '@/guards/garcom.guard';
 
 
 export const appRoutes: Routes = [
@@ -24,6 +26,9 @@ export const appRoutes: Routes = [
             
         ]
     },
+    { path: 'garcom', component: AppLayout , children: [
+        { path: '', component: DashboardGarcom, canActivate: [garcomGuard] },
+     ]},
      { path: 'system', component: AppLayout , children: [
         { path: '', component: DashboardAdm, canActivate: [systemGuard] },
      ]},
