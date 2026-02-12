@@ -32,6 +32,14 @@ export class AppMenu {
                     }
                 ];
             }
+            if (claims.Roles.includes("ROLE_GARCOM")) {
+                this.model = [
+                    {
+                        label: 'Funcionarios',
+                        items: [{ label: 'Pedidos', icon: 'pi pi-fw pi-box', routerLink: ['/garcom'] }]
+                    }
+                ];
+            }
             if (claims.Roles.includes("ROLE_ADMIN")) {
                 this.model = [
                     {

@@ -154,7 +154,7 @@
 </p-dialog>
 
 <app-funcionarios-delete-dialog
-[(funcionarioDelete)]="funcionarioDelete"
+([funcionarioDeleteChange]="funcionarioDeleteChange")
 [funcionarioDeleteId]="funcionarioDeleteId"
-(funcionarioDeleteEvent)="deleteFuncionarios($event)" />
+[funcionarioDelete]="funcionarioDelete" (funcionariosDeleteEvent)="deleteFuncionarios($event)" />
 <p-confirmdialog [style]="{ width: '450px' }" />

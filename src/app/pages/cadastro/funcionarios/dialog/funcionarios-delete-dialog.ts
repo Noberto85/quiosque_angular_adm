@@ -27,7 +27,7 @@ import { SelectModule } from "primeng/select";
 
     <ng-template #footer>
         <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button label="Delete" icon="pi pi-trash" (click)="funcionariosDelete()" [disabled]="form.invalid" />
+        <p-button label="Delete" icon="pi pi-trash"  [disabled]="form.invalid" />
     </ng-template>
 </p-dialog>
     `
@@ -85,7 +85,7 @@ export class FuncionariosDeleteDialog implements OnChanges {
 
     funcionariosDelete() {
         if (this.form.valid) {
-            this.funcionarioDeleteEvent.emit(this.form.value.funcionarioDestino.id);
+            this.funcionarioDeleteEvent.emit(this.form.value.garcomDestino.code);
         }
     }
 }
