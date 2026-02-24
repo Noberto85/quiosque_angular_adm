@@ -20,6 +20,7 @@ import { GarcomService } from '@/service/garcom.service';
 import { PedidoModel } from '@/model/pedido.model';
 
 
+
 @Component({
     selector: 'app-pedidos-garcom-dashboard',
     imports: [CommonModule, DialogModule, Toast, PedidosGarcomComponent, ToolbarModule, ButtonModule, Panel, Avatar, Select, ReactiveFormsModule, InputTextModule],
@@ -37,7 +38,7 @@ import { PedidoModel } from '@/model/pedido.model';
     <p-toolbar styleClass="mb-6">
         <ng-template #start></ng-template>
         <ng-template #end>
-            <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (click)="btnSearch()" />
+            <p-button label="Pesquisar" icon="pi pi-search" severity="secondary" class="mr-2" (click)="btnSearch()" />
         </ng-template>
     </p-toolbar>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -46,57 +47,39 @@ import { PedidoModel } from '@/model/pedido.model';
         </app-pedidos-garcom>
     </div> 
 
-  
-            <p-dialog maskStyleClass="backdrop-blur-sm" [(visible)]="visible" [modal]="true" [draggable]="false" [resizable]="false">
-                <ng-template #headless>
-                    <div class="flex flex-col px-8 py-8 gap-6 rounded-2xl" style="border-radius: 12px;">
+    <p-dialog maskStyleClass="backdrop-blur-sm" [(visible)]="visible" [style]="{ width: '450px' }" header="Novo Funcionario" [modal]="true">
+    <ng-template #content>
         <form [formGroup]="form">
             <div class="flex flex-col gap-6">
                 <div>
-                    <label for="name" class="block font-bold mb-3">Nome</label>
-                    <input maxlength="255" type="text" pInputText id="name" formControlName="nome" required autofocus
-                        fluid placeholder="Digite o nome" />
-                    <small class="text-red-500"
-                        *ngIf="form.get('nome')?.invalid && (form.get('nome')?.dirty || form.get('nome')?.touched)">Nome
-                        é requerido.</small>
+                    <label for="name" class="block font-bold mb-3">Codigo</label>
+                    <input maxlength="255" type="text" pInputText id="name" formControlName="codigo" required autofocus
+                        fluid placeholder="Digite o codigo" />
+                   
                 </div>
                 <div>
-                    <label for="description" class="block font-bold mb-3">Cpf</label>
-                    <input type="text" pInputText id="description" formControlName="cpf" required autofocus fluid
-                        mask="000.000.000-00" placeholder="Digite o cpf" />
-                    <small class="text-red-500"
-                        *ngIf="form.get('cpf')?.hasError('required') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf
-                        é requerido.</small>
-                    <small class="text-red-500"
-                        *ngIf="form.get('cpf')?.hasError('invalidCpf') && (form.get('cpf')?.dirty || form.get('cpf')?.touched)">Cpf
-                        inválido.</small>
+                    <label for="description" class="block font-bold mb-3">Mesa</label>
+                    <input type="number" pInputText id="description" formControlName="mesa"  autofocus fluid
+                        placeholder="Digite o mesa" />
+                    
                 </div>
-                <div>
-                    <label for="description" class="block font-bold mb-3">Tefefone</label>
-                    <input type="text" pInputText id="description" formControlName="telefone" required autofocus fluid
-                        mask="(00) 00000-0000" placeholder="Digite o telefone" />
-                    <small class="text-red-500"
-                        *ngIf="form.get('telefone')?.hasError('required') && (form.get('telefone')?.dirty || form.get('telefone')?.touched)">telefone
-                        é requerido.</small>
-                    <small class="text-red-500"
-                        *ngIf="form.get('telefone')?.hasError('invalidTelefone') && (form.get('telefone')?.dirty || form.get('telefone')?.touched)">telefone
-                        inválido.</small>
-                </div>
+              
                 <div class="flex flex-col gap-6">
                     <div>
-                        <p-select id="state" formControlName="role"  optionLabel="role"
-                            placeholder="Selecione um funcionário" styleClass="w-full" appendTo="body" />
-                        <small class="text-red-500"
-                            *ngIf="form.get('role')?.invalid && (form.get('role')?.dirty || form.get('role')?.touched)">Funcionário
-                            é requerido.</small>
+                         <label for="description" class="block font-bold mb-3">Status</label>
+                        <p-select id="state" formControlName="status"  [options]="statusOptions" optionValue="code"
+                            placeholder="Selecione um status" styleClass="w-full" appendTo="body" />
                     </div>
                 </div>
             </div>
         </form>
-                        
-                    </div>
-                </ng-template>
-            </p-dialog>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button (click)="closeDialog()" label="Limpar" icon="pi pi-times" text  />
+        <p-button (click)="pesquisar()" label="Pesquisar" icon="pi pi-search" />
+    </ng-template>
+</p-dialog>
        
     `
 })
@@ -108,6 +91,11 @@ export class DashboardGarcom implements OnInit {
     dashboardSystemModel: DashboardSystemModel = {}
     form!: FormGroup;
     visible: boolean = false;
+    statusOptions = [
+        { code: 'EM_PREPARACAO', label: 'Em preparação' },
+        { code: 'PRONTO', label: 'Pronto' },
+        { code: 'ENTREGUE', label: 'Entregue' }
+    ];
 
     constructor(
         private formBuilder: FormBuilder
@@ -117,7 +105,7 @@ export class DashboardGarcom implements OnInit {
         this.createForm();
         this.loadPEdidos();
     }
-    loadPEdidos(){
+    loadPEdidos() {
         let params = {}
         this.garcomService.findAll(params, this.tokenService.getClaim().quiosque_id).subscribe({
             next: (pedidos) => {
@@ -131,12 +119,9 @@ export class DashboardGarcom implements OnInit {
 
     createForm() {
         this.form = this.formBuilder.group({
-            id: [null],
-            nome: [null],
-            cpf: [null],
-            status: [true],
-            telefone: [null],
-            role: [null]
+            codigo: [null],
+            status: [null],
+            mesa: [null]
         });
     }
 
@@ -149,6 +134,20 @@ export class DashboardGarcom implements OnInit {
     }
 
     closeDialog() {
-        this.visible = false;
+        this.form.reset();
+    }
+
+    pesquisar() {
+        
+        let params = this.form.value;
+         this.garcomService.findAll(params, this.tokenService.getClaim().quiosque_id).subscribe({
+            next: (pedidos) => {
+                this.pedidoModel = pedidos;
+                  this.visible = false;
+            },
+            error: (error) => {
+                this.messageService.add({ severity: 'error', summary: 'Erro', detail: error.message });
+            }
+        });
     }
 }

@@ -19,18 +19,21 @@ export class GarcomService {
   
 
     findAll(params?: any, quiosqueId?: string): Observable<PedidoModel[]> {
-        const { mesas = undefined, codigo = undefined, status = [] } = params || {};
+        debugger
+        const { mesa = undefined, codigo = undefined, status = undefined } = params || {};
 
         let queryParams = new HttpParams()
-            .set('status', status)
-            .set('mesas', mesas)
-            .set('codigo', codigo);
-
+        if (codigo) {
+            queryParams = queryParams.set('codigo', codigo);
+        }
         if (status) {
             queryParams = queryParams.set('status', status);
         }
+        if (mesa) {
+            queryParams = queryParams.set('mesa', mesa);
+        }
 
-        return this._http.get<PedidoModel[]>(`${environment.apiUrl}${this.urlGarcomBase}/findAllByStatus/${quiosqueId}`/* , { params: queryParams } */);
+        return this._http.get<PedidoModel[]>(`${environment.apiUrl}${this.urlGarcomBase}/findAllByStatus/${quiosqueId}`, { params: queryParams } );
     }
 
      findAllNOtEqualsId(garcomId: any, quiosqueId: string): Observable<any> {
